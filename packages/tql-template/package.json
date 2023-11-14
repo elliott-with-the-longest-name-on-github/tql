@@ -1,0 +1,37 @@
+{
+	"name": "@sejohnson/tql",
+	"version": "0.0.1",
+	"description": "A flexible, multi-dialect tagged template SQL query builder.",
+	"scripts": {
+		"lint": "prettier --check . --ignore-path .gitignore",
+		"check": "tsc --noEmit",
+		"build": "tsc",
+		"format": "prettier --write . --ignore-path .gitignore",
+		"test": "pnpm test:unit",
+		"test:unit": "vitest run",
+		"test:watch": "vitest"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/node": "^20.2.1",
+		"@typescript-eslint/eslint-plugin": "^5.59.6",
+		"@typescript-eslint/parser": "^5.59.6",
+		"eslint": "^8.40.0",
+		"prettier": "^2.8.8",
+		"typescript": "^5.0.4",
+		"vitest": "^0.31.1"
+	},
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"require": "./dist/index.js",
+			"import": "./dist/index.js"
+		}
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	}
+}

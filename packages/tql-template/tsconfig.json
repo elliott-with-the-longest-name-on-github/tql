@@ -1,0 +1,30 @@
+{
+	"compilerOptions": {
+		"allowJs": false,
+		"noEmit": false,
+		"strict": true,
+		"target": "es2020",
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"allowSyntheticDefaultImports": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true, 
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "verbatimModuleSyntax": true,
+    "noUncheckedIndexedAccess": true,
+    "outDir": "dist",
+    "types": ["node"],
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+	},
+	"include": [
+		"src/**/*"
+	],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/**/*.spec.ts",
+  ]
+}
