@@ -3,7 +3,7 @@
 		"allowJs": false,
 		"noEmit": false,
 		"strict": true,
-		"target": "es2020",
+		"target": "ES2019",
 		"module": "esnext",
 		"moduleResolution": "bundler",
 		"allowSyntheticDefaultImports": true,
@@ -26,5 +26,6 @@
     "node_modules",
     "dist",
     "src/**/*.spec.ts",
+    "src/dialects/test.ts"
   ]
 }
