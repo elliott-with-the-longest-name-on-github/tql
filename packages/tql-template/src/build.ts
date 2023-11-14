@@ -9,7 +9,7 @@ export function build(dialect: DialectImpl, ast: TqlQuery | TqlFragment): void {
 		identifiers: dialect.identifiers.bind(dialect),
 		list: dialect.list.bind(dialect),
 		values: dialect.values.bind(dialect),
-		'update-set': dialect.updateSet.bind(dialect),
+		'update-set': dialect.set.bind(dialect),
 		string: dialect.string.bind(dialect),
 		parameter: dialect.parameter.bind(dialect),
 		fragment: (node) => build(dialect, node),

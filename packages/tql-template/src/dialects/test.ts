@@ -11,7 +11,7 @@ export function createTestDialect(): {
 		identifiers: MockedFunction<DialectImpl['identifiers']>;
 		list: MockedFunction<DialectImpl['list']>;
 		values: MockedFunction<DialectImpl['values']>;
-		updateSet: MockedFunction<DialectImpl['updateSet']>;
+		set: MockedFunction<DialectImpl['set']>;
 		preprocess: MockedFunction<DialectImpl['preprocess']>;
 		postprocess: MockedFunction<DialectImpl['postprocess']>;
 	};
@@ -23,7 +23,7 @@ export function createTestDialect(): {
 		identifiers: vi.fn(),
 		list: vi.fn(),
 		values: vi.fn(),
-		updateSet: vi.fn(),
+		set: vi.fn(),
 		preprocess: vi.fn((fragment) => fragment),
 		postprocess: vi.fn<[string, unknown[]], [string, unknown[]]>((query, params) => [query, params]),
 	};
@@ -34,7 +34,7 @@ export function createTestDialect(): {
 		identifiers = mocks.identifiers;
 		list = mocks.list;
 		values = mocks.values;
-		updateSet = mocks.updateSet;
+		set = mocks.set;
 		preprocess = mocks.preprocess;
 		postprocess = mocks.postprocess;
 	}

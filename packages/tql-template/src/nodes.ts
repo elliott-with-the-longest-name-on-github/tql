@@ -1,4 +1,4 @@
-import type { UpdateSetObject, ValuesObject } from './types.js';
+import type { SetObject, ValuesObject } from './types.js';
 
 export const tqlNodeTypes = [
 	'identifier',
@@ -80,8 +80,8 @@ export class TqlValues extends TqlNode<'values'> {
  * A SET clause. Given a record, the record keys are column names and the corresponding values are the values for that column.
  * The dialect should write the full SET clause, i.e. `SET "col_1" = $1, "col_2" = $2`.
  */
-export class TqlUpdateSet extends TqlNode<'update-set'> {
-	constructor(public readonly values: UpdateSetObject) {
+export class TqlSet extends TqlNode<'update-set'> {
+	constructor(public readonly values: SetObject) {
 		super('update-set');
 	}
 }

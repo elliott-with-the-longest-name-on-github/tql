@@ -7,7 +7,7 @@ import {
 	TqlList,
 	TqlParameter,
 	TqlTemplateString,
-	TqlUpdateSet,
+	TqlSet,
 	TqlValues,
 } from '../nodes.js';
 
@@ -76,7 +76,7 @@ export class PostgresDialect extends BaseDialect implements DialectImpl {
 		}
 	}
 
-	updateSet(entry: TqlUpdateSet): void {
+	set(entry: TqlSet): void {
 		this.appendToQuery('SET ');
 		const columns = Object.keys(entry.values);
 		const queryItems: string[] = [];

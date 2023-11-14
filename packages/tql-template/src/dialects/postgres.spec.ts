@@ -7,7 +7,7 @@ import {
 	TqlIdentifiers,
 	TqlList,
 	TqlValues,
-	TqlUpdateSet,
+	TqlSet,
 } from '../nodes.js';
 import { createQueryBuilder } from '../utils.js';
 import { TqlError } from '../error.js';
@@ -257,11 +257,11 @@ describe('tql dialect: Postgres', () => {
 		});
 	});
 
-	describe('updateSet', () => {
+	describe('set', () => {
 		it('correctly constructs the clause', () => {
 			const dialect = d();
 			const setRecord = { name: 'vercelliott', 'address.zip': '00000' };
-			dialect.updateSet(new TqlUpdateSet(setRecord));
+			dialect.set(new TqlSet(setRecord));
 			expect(queryBuilder.params).toEqual(['vercelliott', '00000']);
 			expect(queryBuilder.query).toBe('SET "name" = $1, "address"."zip" = $2');
 		});
@@ -272,7 +272,7 @@ describe('tql dialect: Postgres', () => {
 				'name"; SELECT * FROM privileged_information; --': 'vercelliott; SELECT * FROM privileged_information; --',
 				email: 'wouldnt.you.like.to.know@vercel.com',
 			};
-			dialect.updateSet(new TqlUpdateSet(item));
+			dialect.set(new TqlSet(item));
 			expect(queryBuilder.params).toEqual([item['name"; SELECT * FROM privileged_information; --'], item.email]);
 			expect(queryBuilder.query).toBe('SET "name""; SELECT * FROM privileged_information; --" = $1, "email" = $2');
 		});

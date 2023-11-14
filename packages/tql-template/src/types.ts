@@ -7,10 +7,10 @@ import type {
 	TqlFragment,
 	TqlTemplateString,
 	TqlValues,
-	TqlUpdateSet,
+	TqlSet,
 } from './nodes.js';
 
-export type UpdateSetObject = { [columnName: string]: unknown };
+export type SetObject = { [columnName: string]: unknown };
 export type ValuesObject = { [columnName: string]: unknown } | { [columnName: string]: unknown }[];
 
 export interface DialectImpl {
@@ -21,7 +21,7 @@ export interface DialectImpl {
 	identifiers(ids: TqlIdentifiers): void;
 	list(vals: TqlList): void;
 	values(entries: TqlValues): void;
-	updateSet(entries: TqlUpdateSet): void;
+	set(entries: TqlSet): void;
 	postprocess(query: string, params: unknown[]): [string, unknown[]];
 }
 
@@ -154,7 +154,7 @@ export interface Tql {
 	 */
 	values: (entries: ValuesObject) => TqlValues;
 
-	updateSet: (entry: UpdateSetObject) => TqlUpdateSet;
+	set: (entry: SetObject) => TqlSet;
 
 	/**
 	 * A raw string that will be inserted into the query as-is.

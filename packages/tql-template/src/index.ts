@@ -12,7 +12,7 @@ import {
 	TqlTemplateString,
 	TqlValues,
 	type TqlNodeType,
-	TqlUpdateSet,
+	TqlSet,
 } from './nodes.js';
 import { build } from './build.js';
 
@@ -33,7 +33,7 @@ export const init: Init = ({ dialect }) => {
 		identifiers: (ids) => new TqlIdentifiers(ids),
 		list: (vals) => new TqlList(vals),
 		values: (entries) => new TqlValues(entries),
-		updateSet: (entries) => new TqlUpdateSet(entries),
+		set: (entries) => new TqlSet(entries),
 		unsafe: (strings, ...values) => {
 			if (!isTemplateStringsArray(strings) || !Array.isArray(values) || strings.length !== values.length + 1) {
 				throw new TqlError('untemplated_sql_call');
