@@ -5,6 +5,7 @@
     "@sejohnson/tql": "0.0.1"
   },
   "changesets": [
+    "afraid-needles-kiss",
     "hot-pans-heal"
   ]
 }
