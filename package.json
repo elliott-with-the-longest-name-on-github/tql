@@ -2,7 +2,6 @@
   "name": "tql-monorepo",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
   "private": true,
   "scripts": {
     "lint": "pnpm -r lint",
@@ -15,7 +14,8 @@
     "test:integration": "pnpm -r test:integration",
     "test:unit": "pnpm -r test:unit",
     "release": "pnpm build && changeset publish",
-    "version-packages": "changeset version && pnpm i --no-frozen-lockfile && git add ."
+    "version-packages": "changeset version && pnpm i --no-frozen-lockfile && git add .",
+    "publint": "pnpm -r publint"
   },
   "keywords": [],
   "author": "S. Elliott Johnson",

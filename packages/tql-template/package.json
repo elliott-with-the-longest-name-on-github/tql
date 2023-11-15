@@ -16,7 +16,8 @@
 		"format": "prettier --write . --ignore-path .gitignore",
 		"test": "pnpm test:unit",
 		"test:unit": "vitest run",
-		"test:watch": "vitest"
+		"test:watch": "vitest",
+		"publint": "npx publint"
 	},
 	"keywords": [],
 	"author": "",
@@ -34,7 +35,6 @@
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
-			"require": "./dist/index.js",
 			"import": "./dist/index.js"
 		}
 	},
@@ -42,5 +42,9 @@
 	"types": "./dist/index.d.ts",
 	"engines": {
 		"node": ">=18.0.0"
-	}
+	},
+	"files": [
+		"./dist/**/*.js",
+		"./dist/**/*.d.ts"
+	]
 }
