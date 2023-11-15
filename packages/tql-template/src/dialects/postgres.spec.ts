@@ -1,4 +1,4 @@
-import { it, describe, expect, beforeEach, afterEach, vi } from 'vitest';
+import { it, describe, expect, beforeEach, vi } from 'vitest';
 import { PostgresDialect } from './postgres.js';
 import {
 	TqlTemplateString,
@@ -21,7 +21,7 @@ describe('tql dialect: Postgres', () => {
 		qb.appendToParams = vi.fn().mockImplementation(qb.appendToParams);
 		qb.appendToQuery = vi.fn().mockImplementation(qb.appendToQuery);
 		queryBuilder = qb;
-		d = () => new PostgresDialect(qb.appendToQuery, qb.appendToParams);
+		d = (): PostgresDialect => new PostgresDialect(qb.appendToQuery, qb.appendToParams);
 	});
 
 	describe('string', () => {
