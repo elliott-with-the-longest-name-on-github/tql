@@ -86,7 +86,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install && pnpm build
 
       - name: Run Publint
         run: pnpm publint
