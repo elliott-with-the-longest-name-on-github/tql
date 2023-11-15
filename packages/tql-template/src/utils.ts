@@ -10,19 +10,19 @@ export function createQueryBuilder(): {
 	appendToParams: (...values: unknown[]) => number;
 } {
 	let query = '';
-	let params: unknown[] = [];
-	const appendToQuery = (...values: string[]) => {
+	const params: unknown[] = [];
+	const appendToQuery = (...values: string[]): number => {
 		query += values.join('');
 		return query.length;
 	};
-	const appendToParams = (...values: unknown[]) => {
+	const appendToParams = (...values: unknown[]): number => {
 		return params.push(...values);
 	};
 	return {
-		get query() {
+		get query(): string {
 			return query;
 		},
-		get params() {
+		get params(): unknown[] {
 			return params;
 		},
 		appendToQuery,
@@ -31,7 +31,7 @@ export function createQueryBuilder(): {
 }
 
 // TODO: test
-export function pluralize(str: string, plural: boolean, suffix: string = 's'): string {
+export function pluralize(str: string, plural: boolean, suffix = 's'): string {
 	if (plural) {
 		return `${str}${suffix}`;
 	}

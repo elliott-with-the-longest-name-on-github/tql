@@ -1,6 +1,6 @@
 import { createQueryBuilder, isTemplateStringsArray } from './utils.js';
 import { TqlError } from './error.js';
-import type { Init } from './types.js';
+import type { CompiledQuery, Init } from './types.js';
 import {
 	TqlIdentifier,
 	TqlIdentifiers,
@@ -20,7 +20,7 @@ export { PostgresDialect } from './dialects/postgres.js';
 
 export const init: Init = ({ dialect }) => {
 	return {
-		query: (strings, ...values) => {
+		query: (strings, ...values): CompiledQuery => {
 			const query = parseTemplate(TqlQuery, strings, values);
 			const qb = createQueryBuilder();
 			const d = new dialect(qb.appendToQuery, qb.appendToParams);
@@ -34,7 +34,7 @@ export const init: Init = ({ dialect }) => {
 		list: (vals) => new TqlList(vals),
 		values: (entries) => new TqlValues(entries),
 		set: (entries) => new TqlSet(entries),
-		unsafe: (strings, ...values) => {
+		unsafe: (strings, ...values): TqlTemplateString => {
 			if (!isTemplateStringsArray(strings) || !Array.isArray(values) || strings.length !== values.length + 1) {
 				throw new TqlError('untemplated_sql_call');
 			}
@@ -42,6 +42,7 @@ export const init: Init = ({ dialect }) => {
 			// unexpectedly, concatenating a string in a tight loop is faster than using a string-builder pattern
 			let result = '';
 			for (let i = 0; i < strings.length; i++) {
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				result += strings[i]!;
 				if (i === values.length) {
 					continue;

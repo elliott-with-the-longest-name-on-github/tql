@@ -8,24 +8,17 @@
 		"moduleResolution": "bundler",
 		"allowSyntheticDefaultImports": true,
 		"noUnusedLocals": true,
-		"noUnusedParameters": true, 
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "verbatimModuleSyntax": true,
-    "noUncheckedIndexedAccess": true,
-    "outDir": "dist",
-    "types": ["node"],
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
+		"noUnusedParameters": true,
+		"noImplicitAny": true,
+		"noImplicitThis": true,
+		"verbatimModuleSyntax": true,
+		"noUncheckedIndexedAccess": true,
+		"outDir": "dist",
+		"types": ["node"],
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true
 	},
-	"include": [
-		"src/**/*"
-	],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "src/**/*.spec.ts",
-    "src/dialects/test.ts"
-  ]
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist", "src/**/*.spec.ts", "src/dialects/test.ts"]
 }

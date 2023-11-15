@@ -2,13 +2,13 @@ import { IdenticalColumnValidator } from '../values-object-validator.js';
 import type { DialectImpl } from '../types.js';
 import { BaseDialect } from '../dialect.js';
 import {
-	TqlIdentifier,
-	TqlIdentifiers,
-	TqlList,
-	TqlParameter,
-	TqlTemplateString,
-	TqlSet,
-	TqlValues,
+	type TqlIdentifier,
+	type TqlIdentifiers,
+	type TqlList,
+	type TqlParameter,
+	type TqlTemplateString,
+	type TqlSet,
+	type TqlValues,
 } from '../nodes.js';
 
 export class PostgresDialect extends BaseDialect implements DialectImpl {
@@ -46,7 +46,7 @@ export class PostgresDialect extends BaseDialect implements DialectImpl {
 			const validator = new IdenticalColumnValidator();
 			let first = true;
 			let columns: string[] = [];
-			let rows: string[] = [];
+			const rows: string[] = [];
 			for (const entry of entries.values) {
 				validator.validate(entry);
 				if (first) {

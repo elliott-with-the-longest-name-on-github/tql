@@ -1,6 +1,6 @@
 export class TqlError<T extends keyof typeof messages> extends Error {
 	constructor(public code: T, ...details: Parameters<(typeof messages)[T]>) {
-		// @ts-expect-error
+		// @ts-expect-error - This is super hard to type but it does work correctly
 		super(`tql: ${messages[code as T](...details)}`);
 		this.name = 'TqlError';
 	}
@@ -20,6 +20,7 @@ const messages = {
 	values_records_mismatch: (diff: ColumnDiff) => formatValuesRecordsMismatchMessage(diff),
 	values_records_empty: () => 'The records passed to `values` must not be empty.',
 	illegal_query_recursion: () => 'Found a nested call to `query`. If you need to nest queries, use `fragment`.',
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 } as const satisfies Record<string, (...args: any[]) => string>;
 
 function formatValuesRecordsMismatchMessage(diff: ColumnDiff): string {

@@ -139,17 +139,12 @@ describe('integration', () => {
 		let identifiers: Tql['identifiers'];
 		let list: Tql['list'];
 		let values: Tql['values'];
-		let unsafe: Tql['unsafe'];
-		let queryBuilder: ReturnType<typeof createQueryBuilder>;
-		let d: () => PostgresDialect;
 
 		beforeEach(() => {
 			const qb = createQueryBuilder();
 			qb.appendToParams = vi.fn().mockImplementation(qb.appendToParams);
 			qb.appendToQuery = vi.fn().mockImplementation(qb.appendToQuery);
-			queryBuilder = qb;
-			d = () => new PostgresDialect(qb.appendToQuery, qb.appendToParams);
-			({ query, fragment, identifier, identifiers, list, values, unsafe } = init({
+			({ query, fragment, identifier, identifiers, list, values } = init({
 				dialect: PostgresDialect,
 			}));
 		});

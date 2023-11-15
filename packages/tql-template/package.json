@@ -2,9 +2,16 @@
 	"name": "@sejohnson/tql",
 	"version": "0.0.2-beta.0",
 	"description": "A flexible, multi-dialect tagged template SQL query builder.",
+	"repository": {
+		"directory": "./packages/tql-template",
+		"type": "git",
+		"url": "https://github.com/tcc-sejohnson/tql"
+	},
 	"scripts": {
-		"lint": "prettier --check . --ignore-path .gitignore",
-		"check": "tsc --noEmit",
+		"lint": "eslint \"src/**/*.ts\"",
+		"lint-fix": "eslint \"src/**/*.ts\" --fix",
+		"prettier-check": "prettier --check . --ignore-path .gitignore",
+		"type-check": "tsc --noEmit",
 		"build": "tsc",
 		"format": "prettier --write . --ignore-path .gitignore",
 		"test": "pnpm test:unit",
