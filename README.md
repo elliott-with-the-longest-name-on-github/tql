@@ -1,6 +1,6 @@
 # What is it?
 
-TQL is a lightweight library for writing SQL in TypeScript:
+TQL (Template-SQL -- unfortunately, T-SQL is already taken!) is a lightweight library for writing SQL in TypeScript:
 
 ```ts
 import { init, PostgresDialect } from '@sejohnson/tql';
