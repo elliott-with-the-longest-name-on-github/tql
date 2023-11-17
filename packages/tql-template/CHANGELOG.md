@@ -1,5 +1,11 @@
 # @sejohnson/tql
 
+## 0.0.2-beta.2
+
+### Patch Changes
+
+- 6bc9a7c: Add README
+
 ## 0.0.2-beta.1
 
 ### Patch Changes
