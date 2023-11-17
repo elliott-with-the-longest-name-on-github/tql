@@ -1,5 +1,11 @@
 # @sejohnson/tql
 
+## 0.0.2-beta.4
+
+### Patch Changes
+
+- 81232ef: fix: Move README to package
+
 ## 0.0.2-beta.3
 
 ### Patch Changes
