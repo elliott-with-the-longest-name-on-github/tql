@@ -1,5 +1,9 @@
 # What is it?
 
+```sh
+pnpm i @sejohnson/tql
+```
+
 TQL (Template-SQL -- unfortunately, T-SQL is already taken!) is a lightweight library for writing SQL in TypeScript:
 
 ```ts
@@ -12,6 +16,20 @@ const [q, params] = query`SELECT * FROM users`;
 ```
 
 Its API is simple -- everything starts and ends with `query`, which returns a tuple of the compiled query string and parameters to pass to your database.
+
+### API
+
+To start, you'll need to initialize the query compiler:
+
+```ts
+import { init, PostgresDialect } from '@sejohnson/tql';
+
+const tql = init({ dialect: PostgresDialect });
+```
+
+Missing your dialect? Feel free to open a PR -- they're pretty easy to write!
+
+Below, you can see the utilities returned from `init`:
 
 #### Parameters
 
