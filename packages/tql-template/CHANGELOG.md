@@ -1,5 +1,11 @@
 # @sejohnson/tql
 
+## 0.0.2-beta.3
+
+### Patch Changes
+
+- 6712425: Additional docs
+
 ## 0.0.2-beta.2
 
 ### Patch Changes
