@@ -9,7 +9,16 @@ TQL (Template-SQL -- unfortunately, T-SQL is already taken!) is a lightweight li
 ```ts
 import { init, PostgresDialect } from '@sejohnson/tql';
 
-const { query } = init({ dialect: PostgresDialect });
+const { 
+  query,
+  fragment,
+  identifier,
+  identifiers,
+  list,
+  values,
+  set,
+  unsafe
+} = init({ dialect: PostgresDialect });
 
 const [q, params] = query`SELECT * FROM users`;
 // output: ['SELECT * FROM users', []]
@@ -108,3 +117,7 @@ const [q, params] = query`UPDATE users ${set(updatedUser)} WHERE userId = ${user
 #### `unsafe`
 
 This is just a tagged template that will be verbatim-inserted into your query. It _is_ unsafe, do _not_ pass unsanitized user input into it!
+
+### I want to...
+
+As people ask questions about how to do various things, I'll fill out this section as a sort of FAQ.
