@@ -9,16 +9,7 @@ TQL (Template-SQL -- unfortunately, T-SQL is already taken!) is a lightweight li
 ```ts
 import { init, PostgresDialect } from '@sejohnson/tql';
 
-const { 
-  query,
-  fragment,
-  identifier,
-  identifiers,
-  list,
-  values,
-  set,
-  unsafe
-} = init({ dialect: PostgresDialect });
+const { query, fragment, identifier, identifiers, list, values, set, unsafe } = init({ dialect: PostgresDialect });
 
 const [q, params] = query`SELECT * FROM users`;
 // output: ['SELECT * FROM users', []]
@@ -91,8 +82,8 @@ Inserting records is a pain!
 
 ```ts
 const users = [
-  { name: 'vercelliott', favorite_hobby: 'screaming into the void' },
-  { name: 'reselliott', favorite_hobby: 'thrifting' },
+	{ name: 'vercelliott', favorite_hobby: 'screaming into the void' },
+	{ name: 'reselliott', favorite_hobby: 'thrifting' },
 ];
 const [q, params] = query`INSERT INTO users ${values(users)}`;
 // output: [
