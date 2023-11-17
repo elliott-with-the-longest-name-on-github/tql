@@ -67,7 +67,6 @@ function parseTemplate<TResult extends TqlQuery | TqlFragment>(
 
 	let nodeInsertIndex = 0;
 	for (let i = 0; i < strings.length; i++) {
-		// @ts-expect-error - We check right above in the loop that this index is valid
 		nodes[nodeInsertIndex++] = new TqlTemplateString(strings[i]);
 
 		if (i === values.length) {
