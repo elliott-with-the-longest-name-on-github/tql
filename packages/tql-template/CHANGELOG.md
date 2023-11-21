@@ -1,5 +1,11 @@
 # @sejohnson/tql
 
+## 1.0.1
+
+### Patch Changes
+
+- 16b43f1: feat: Add CJS files + configuration
+
 ## 1.0.0
 
 ### Major Changes
