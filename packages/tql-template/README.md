@@ -23,16 +23,16 @@ What is a tagged template in JavaScript? Quite simply, it's a function with the 
 
 ```ts
 function taggedTemplate(strings: TemplateStringsArray, ...values: unknown[]): any {
-  // just like any regular function, you can return anything from here!
+	// just like any regular function, you can return anything from here!
 }
 
 const parameterName = 'strings';
-const result = taggedTemplate`The stringy parts of this are split on the "holes" and passed in as the "${variableName}" array!`
+const result = taggedTemplate`The stringy parts of this are split on the "holes" and passed in as the "${variableName}" array!`;
 // strings = ['The stringy parts of this are split on the "holes" and passed in as the ", " array!"]
 // values: ['strings']
 ```
 
-This is good news for SQL! The values in `strings` can *only* come directly from your code (as in, you as a developer definitely wrote them), which means they're always safe. We can then view the "holes" (anything between `${}`) as a doorway through which more-exotic, potentially-unsafe things can be safely passed into your query. 
+This is good news for SQL! The values in `strings` can _only_ come directly from your code (as in, you as a developer definitely wrote them), which means they're always safe. We can then view the "holes" (anything between `${}`) as a doorway through which more-exotic, potentially-unsafe things can be safely passed into your query.
 
 But how do we know what to do with the special values passed through the "doorways"? Let's break it down. We need two pieces of semantic information:
 
@@ -43,7 +43,7 @@ This is trivially easy to do with classes -- if we only allow subclasses of a pa
 
 ```ts
 if (!value instanceof TqlNode) {
-  return new TqlParameter(value);
+	return new TqlParameter(value);
 }
 return value;
 ```
@@ -68,7 +68,7 @@ Below, you can see the utilities returned from `init`, but here's a summary tabl
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `query`       | `(strings: TemplateStringsArray, ...values: unknown[]) => [string, unknown[]]`                                                       | The top-level query object. Returns a tuple of the SQL query string and an array of parameters. Pass both of these to your database driver.                                                                                                                   |
 | `fragment`    | `(strings: TemplateStringsArray, ...values: unknown[]) => [string, unknown[]]`                                                       | Has the same API as `query`, but returns a `TqlFragment` node which can be recursively nested within itself and included in a top-level `query`.                                                                                                              |
-| `identifiers` | `(ids: string | string[]) => TqlIdentifiers`                                                                                         | Accepts a list of strings, escapes them, and inserts them into the query as identifiers (table or column names). Identifiers are safe and easy to escape, unlike query values! Will also accept a single identifier, for convenience.                         |
+| `identifiers` | <code>(ids: string &#124; string[]) => TqlIdentifiers</code>                                                                         | Accepts a list of strings, escapes them, and inserts them into the query as identifiers (table or column names). Identifiers are safe and easy to escape, unlike query values! Will also accept a single identifier, for convenience.                         |
 | `list`        | `(parameters: unknown[]) => TqlList`                                                                                                 | Accepts a list of anything and inserts it into the query as a parameterized list. For example, `[1, 2, 3]` would become `($1, $2, $3)` with the original values stored in the parameters array.                                                               |
 | `values`      | `(entries: ValuesObject) => TqlValues`, where `ValuesObject` is `{ [columnName: string]: unknown }` or an array of that object type. | Accepts an array of records (or, for convenience, a single record) and builds a VALUES clause out of it. See the example below for a full explanation.                                                                                                        |
 | `set`         | `(entry: SetObject) => TqlSet`, where `SetObject` is `{ [columnName: string]: unknown }`.                                            | Accepts a record representing the SET clause, and returns a parameterized SET clause. See example below for a full explanation.                                                                                                                               |
