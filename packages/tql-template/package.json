@@ -12,7 +12,7 @@
 		"lint-fix": "eslint \"src/**/*.ts\" --fix",
 		"prettier-check": "prettier --check . --ignore-path .gitignore",
 		"type-check": "tsc --noEmit",
-		"build": "tsc",
+		"build": "tsup",
 		"format": "prettier --write . --ignore-path .gitignore",
 		"test": "pnpm test:unit",
 		"test:unit": "vitest run",
@@ -28,6 +28,7 @@
 		"@typescript-eslint/parser": "^5.59.6",
 		"eslint": "^8.40.0",
 		"prettier": "^2.8.8",
+		"tsup": "^8.0.1",
 		"typescript": "^5.0.4",
 		"vitest": "^0.31.1"
 	},
@@ -35,11 +36,14 @@
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs",
+			"default": "./dist/index.js"
 		}
 	},
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
+	"readme": "../../README.md",
 	"engines": {
 		"node": ">=18.0.0"
 	},
