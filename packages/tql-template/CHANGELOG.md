@@ -1,5 +1,11 @@
 # @sejohnson/tql
 
+## 1.0.0
+
+### Major Changes
+
+- b0ebee4: Go live!
+
 ## 0.0.2
 
 ### Patch Changes
