@@ -1,15 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PostgresDialect, init } from './index.js';
-import {
-	TqlQuery,
-	TqlFragment,
-	TqlIdentifier,
-	TqlIdentifiers,
-	TqlList,
-	TqlParameter,
-	TqlTemplateString,
-	TqlValues,
-} from './nodes.js';
+import { TqlQuery, TqlFragment, TqlIdentifiers, TqlList, TqlParameter, TqlTemplateString, TqlValues } from './nodes.js';
 import { createTestDialect } from './dialects/test.js';
 import type { Tql } from './types.js';
 import { createQueryBuilder } from './utils.js';
@@ -18,7 +9,6 @@ describe('exports', () => {
 	const { Dialect, mocks } = createTestDialect();
 	let query: Tql['query'];
 	let fragment: Tql['fragment'];
-	let identifier: Tql['identifier'];
 	let identifiers: Tql['identifiers'];
 	let list: Tql['list'];
 	let values: Tql['values'];
@@ -26,7 +16,7 @@ describe('exports', () => {
 
 	beforeEach(() => {
 		vi.restoreAllMocks();
-		({ query, fragment, identifier, identifiers, list, values, unsafe } = init({
+		({ query, fragment, identifiers, list, values, unsafe } = init({
 			dialect: Dialect,
 		}));
 	});
@@ -41,7 +31,6 @@ describe('exports', () => {
 			expect(mocks.string).toHaveBeenCalledOnce();
 			expect(mocks.string).toHaveBeenCalledWith(new TqlTemplateString('SELECT * FROM users'));
 			expect(mocks.parameter).not.toHaveBeenCalled();
-			expect(mocks.identifier).not.toHaveBeenCalled();
 			expect(mocks.identifiers).not.toHaveBeenCalled();
 			expect(mocks.list).not.toHaveBeenCalled();
 			expect(mocks.values).not.toHaveBeenCalled();
@@ -70,20 +59,11 @@ describe('exports', () => {
 			expect(mocks.string).toHaveBeenNthCalledWith(4, new TqlTemplateString(');'));
 			expect(mocks.parameter).toHaveBeenCalledOnce();
 			expect(mocks.parameter).toHaveBeenCalledWith(new TqlParameter(1234));
-			expect(mocks.identifier).not.toHaveBeenCalled();
 			expect(mocks.identifiers).not.toHaveBeenCalled();
 			expect(mocks.list).not.toHaveBeenCalled();
 			expect(mocks.values).not.toHaveBeenCalled();
 			expect(mocks.postprocess).toHaveBeenCalledOnce();
 			expect(mocks.postprocess).toHaveBeenCalledWith('', []);
-		});
-	});
-
-	describe('identifier', () => {
-		it('creates an identifier object', () => {
-			const result = identifier('column_name');
-			expect(result).toBeInstanceOf(TqlIdentifier);
-			expect(result.value).toBe('column_name');
 		});
 	});
 
@@ -124,7 +104,7 @@ describe('exports', () => {
 
 	describe('unsafe', () => {
 		it('creates a TqlTemplateString object', () => {
-			const result = unsafe`SELECT * FROM users WHERE id = ${1234}`;
+			const result = unsafe(`SELECT * FROM users WHERE id = ${1234}`);
 			expect(result).toBeInstanceOf(TqlTemplateString);
 			expect(result.value).toEqual('SELECT * FROM users WHERE id = 1234');
 		});
@@ -135,7 +115,6 @@ describe('integration', () => {
 	describe('postgres', () => {
 		let query: Tql['query'];
 		let fragment: Tql['fragment'];
-		let identifier: Tql['identifier'];
 		let identifiers: Tql['identifiers'];
 		let list: Tql['list'];
 		let values: Tql['values'];
@@ -144,7 +123,7 @@ describe('integration', () => {
 			const qb = createQueryBuilder();
 			qb.appendToParams = vi.fn().mockImplementation(qb.appendToParams);
 			qb.appendToQuery = vi.fn().mockImplementation(qb.appendToQuery);
-			({ query, fragment, identifier, identifiers, list, values } = init({
+			({ query, fragment, identifiers, list, values } = init({
 				dialect: PostgresDialect,
 			}));
 		});
@@ -175,7 +154,7 @@ describe('integration', () => {
 
 		it('produces a correct query with dynamic identifiers', () => {
 			const [q, params] = query`
-        SELECT ${identifier('name')}, ${identifiers([
+        SELECT ${identifiers('name')}, ${identifiers([
 				'email',
 				'birthdate',
 				'gender',

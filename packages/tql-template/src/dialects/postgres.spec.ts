@@ -1,14 +1,6 @@
 import { it, describe, expect, beforeEach, vi } from 'vitest';
 import { PostgresDialect } from './postgres.js';
-import {
-	TqlTemplateString,
-	TqlParameter,
-	TqlIdentifier,
-	TqlIdentifiers,
-	TqlList,
-	TqlValues,
-	TqlSet,
-} from '../nodes.js';
+import { TqlTemplateString, TqlParameter, TqlIdentifiers, TqlList, TqlValues, TqlSet } from '../nodes.js';
 import { createQueryBuilder } from '../utils.js';
 import { TqlError } from '../error.js';
 
@@ -61,11 +53,11 @@ describe('tql dialect: Postgres', () => {
 		});
 	});
 
-	describe('identifier', () => {
-		it('adds an identifier to the query', () => {
+	describe('identifiers', () => {
+		it('adds a single identifier to the query', () => {
 			const dialect = d();
 			const identifier = 'name';
-			dialect.identifier(new TqlIdentifier(identifier));
+			dialect.identifiers(new TqlIdentifiers(identifier));
 			expect(queryBuilder.params).toEqual([]);
 			expect(queryBuilder.query).toBe('"name"');
 		});
@@ -82,19 +74,9 @@ describe('tql dialect: Postgres', () => {
 			},
 		])('escapes identifiers', ({ input, output }) => {
 			const dialect = d();
-			dialect.identifier(new TqlIdentifier(input));
+			dialect.identifiers(new TqlIdentifiers(input));
 			expect(queryBuilder.params).toEqual([]);
 			expect(queryBuilder.query).toBe(output);
-		});
-	});
-
-	describe('identifiers', () => {
-		it('adds a single identifier to the query', () => {
-			const dialect = d();
-			const identifier = 'name';
-			dialect.identifiers(new TqlIdentifiers([identifier]));
-			expect(queryBuilder.params).toEqual([]);
-			expect(queryBuilder.query).toBe('"name"');
 		});
 
 		it('adds multiple identifiers to the query', () => {

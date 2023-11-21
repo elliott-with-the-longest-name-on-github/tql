@@ -5,7 +5,6 @@ import type { DialectImpl } from './types';
 // TODO: test
 export function build(dialect: DialectImpl, ast: TqlQuery | TqlFragment): void {
 	const actions = {
-		identifier: dialect.identifier.bind(dialect),
 		identifiers: dialect.identifiers.bind(dialect),
 		list: dialect.list.bind(dialect),
 		values: dialect.values.bind(dialect),

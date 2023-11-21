@@ -1,7 +1,6 @@
 import type { SetObject, ValuesObject } from './types.js';
 
 export const tqlNodeTypes = [
-	'identifier',
 	'list',
 	'parameter',
 	'string',
@@ -19,20 +18,11 @@ export class TqlNode<T extends TqlNodeType = TqlNodeType> {
 }
 
 /**
- * A SQL identifier, such as a column name or table name.
- */
-export class TqlIdentifier extends TqlNode<'identifier'> {
-	constructor(public readonly value: string) {
-		super('identifier');
-	}
-}
-
-/**
  * A list of identifiers. Can be used to provide multiple column names in a SELECT or GROUP BY clause, for example, or
  * multiple table names in a comma-separated JOIN. The dialect is responsible for formatting the list appropriately.
  */
 export class TqlIdentifiers extends TqlNode<'identifiers'> {
-	constructor(public readonly values: string[]) {
+	constructor(public readonly values: string | string[]) {
 		super('identifiers');
 	}
 }
