@@ -2,7 +2,6 @@ import { createQueryBuilder, isTemplateStringsArray } from './utils.js';
 import { TqlError } from './error.js';
 import type { CompiledQuery, Init } from './types.js';
 import {
-	TqlIdentifier,
 	TqlIdentifiers,
 	TqlList,
 	TqlNode,
@@ -29,28 +28,11 @@ export const init: Init = ({ dialect }) => {
 			return d.postprocess(qb.query, qb.params);
 		},
 		fragment: (strings, ...values) => parseTemplate(TqlFragment, strings, values),
-		identifier: (id) => new TqlIdentifier(id),
 		identifiers: (ids) => new TqlIdentifiers(ids),
 		list: (vals) => new TqlList(vals),
 		values: (entries) => new TqlValues(entries),
 		set: (entries) => new TqlSet(entries),
-		unsafe: (strings, ...values): TqlTemplateString => {
-			if (!isTemplateStringsArray(strings) || !Array.isArray(values) || strings.length !== values.length + 1) {
-				throw new TqlError('untemplated_sql_call');
-			}
-
-			// unexpectedly, concatenating a string in a tight loop is faster than using a string-builder pattern
-			let result = '';
-			for (let i = 0; i < strings.length; i++) {
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				result += strings[i]!;
-				if (i === values.length) {
-					continue;
-				}
-				result += values[i];
-			}
-			return new TqlTemplateString(result);
-		},
+		unsafe: (str) => new TqlTemplateString(str),
 	};
 };
 

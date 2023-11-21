@@ -1,5 +1,4 @@
 import type {
-	TqlIdentifier,
 	TqlIdentifiers,
 	TqlList,
 	TqlParameter,
@@ -17,7 +16,6 @@ export interface DialectImpl {
 	preprocess(fragment: TqlQuery): TqlQuery;
 	string(str: TqlTemplateString): void;
 	parameter(param: TqlParameter): void;
-	identifier(id: TqlIdentifier): void;
 	identifiers(ids: TqlIdentifiers): void;
 	list(vals: TqlList): void;
 	values(entries: TqlValues): void;
@@ -99,18 +97,11 @@ export interface Tql {
 	fragment: (strings: TemplateStringsArray, ...values: unknown[]) => TqlFragment;
 
 	/**
-	 * Escapes an identifier (column name, table name, etc.) for use in a SQL query.
-	 * @param id - The ID to escape.
-	 * @returns A representation of the identifier that will be escaped by {@link query}.
-	 */
-	identifier: (id: string) => TqlIdentifier;
-
-	/**
 	 * The same as {@link identifier}, but for multiple identifiers. These will be comma-separated by the driver.
 	 * @param ids - The IDs to escape.
 	 * @returns A representation of the identifiers that will be escaped by {@link query}.
 	 */
-	identifiers: (ids: string[]) => TqlIdentifiers;
+	identifiers: (ids: string | string[]) => TqlIdentifiers;
 
 	/**
 	 * For use with the IN operator or anywhere else a parenthesis-list of values is needed.
@@ -154,6 +145,21 @@ export interface Tql {
 	 */
 	values: (entries: ValuesObject) => TqlValues;
 
+	/**
+	 * A SET clause. Given a record, the record keys are column names and the corresponding values are the values for that column.
+	 *
+	 * @example
+	 * ### Update a record
+	 * ```ts
+	 * const userId = 1234;
+	 * const updatedUser = { name: 'vercelliott' };
+	 * const [query, params] = query`UPDATE users ${set(updatedUser)} WHERE user_id = ${userId};`;
+	 * // ['UPDATE users SET "name" = $1 WHERE user_id = $2;', ['vercelliott', 1234]]
+	 *
+	 * @param entry An object representing this SET clause.
+	 * @returns A representation of the SET clause to be passed to {@link query}.
+	 * ```
+	 */
 	set: (entry: SetObject) => TqlSet;
 
 	/**
@@ -164,14 +170,14 @@ export interface Tql {
 	 * ### Expose yourself to SQL injection attacks:
 	 * ```ts
 	 * const userInputName = "Robert'); DROP TABLE students; --";
-	 * const [query, params] = query`INSERT INTO students ("name") VALUES ('${unsafe`${userInputName}`}');`;
+	 * const [query, params] = query(`INSERT INTO students ("name") VALUES ('${unsafe(userInputName)});`);
 	 * // INSERT INTO students ("name") VALUES ('Robert'); DROP TABLE students; --');
 	 * ```
 	 * Don't do this, obviously.
 	 *
-	 * @returns A representation of the string that will be inserted into the query as-is by {@link query}.
+	 * @returns A representation of the string that will be inserted into the query as-is by {@link query} and {@link fragment}.
 	 */
-	unsafe: (strings: TemplateStringsArray, ...values: unknown[]) => TqlTemplateString;
+	unsafe: (str: string) => TqlTemplateString;
 }
 
 export type Init = (options: { dialect: Dialect }) => Tql;

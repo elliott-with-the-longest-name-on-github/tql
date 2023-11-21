@@ -1,6 +1,5 @@
 import { it, describe, expect } from 'vitest';
 import {
-	TqlIdentifier,
 	TqlIdentifiers,
 	TqlList,
 	TqlNode,
@@ -13,11 +12,6 @@ import {
 
 describe('nodes', () => {
 	it.each([
-		{
-			type: 'identifier',
-			Ctor: TqlIdentifier,
-			instance: new TqlIdentifier('foo'),
-		},
 		{
 			type: 'identifiers',
 			Ctor: TqlIdentifiers,

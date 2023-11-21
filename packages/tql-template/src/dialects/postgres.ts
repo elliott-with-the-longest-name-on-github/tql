@@ -2,7 +2,6 @@ import { IdenticalColumnValidator } from '../values-object-validator.js';
 import type { DialectImpl } from '../types.js';
 import { BaseDialect } from '../dialect.js';
 import {
-	type TqlIdentifier,
 	type TqlIdentifiers,
 	type TqlList,
 	type TqlParameter,
@@ -21,12 +20,12 @@ export class PostgresDialect extends BaseDialect implements DialectImpl {
 		this.appendToQuery(`$${paramNumber}`);
 	}
 
-	identifier(id: TqlIdentifier): void {
-		this.appendToQuery(PostgresDialect.escapeIdentifier(id.value));
-	}
-
 	identifiers(ids: TqlIdentifiers): void {
-		this.appendToQuery(ids.values.map((v) => PostgresDialect.escapeIdentifier(v)).join(', '));
+		if (Array.isArray(ids.values)) {
+			this.appendToQuery(ids.values.map((v) => PostgresDialect.escapeIdentifier(v)).join(', '));
+		} else {
+			this.appendToQuery(PostgresDialect.escapeIdentifier(ids.values));
+		}
 	}
 
 	list(vals: TqlList): void {
