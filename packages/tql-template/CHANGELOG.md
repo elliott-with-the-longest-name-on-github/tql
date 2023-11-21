@@ -1,5 +1,11 @@
 # @sejohnson/tql
 
+## 1.0.2
+
+### Patch Changes
+
+- 1e55813: chore: Export types
+
 ## 1.0.1
 
 ### Patch Changes
