@@ -1,5 +1,11 @@
 # @sejohnson/tql
 
+## 1.0.3
+
+### Patch Changes
+
+- f0a79b4: Fix README location
+
 ## 1.0.2
 
 ### Patch Changes
