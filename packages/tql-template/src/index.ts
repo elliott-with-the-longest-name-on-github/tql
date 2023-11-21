@@ -15,6 +15,8 @@ import {
 } from './nodes.js';
 import { build } from './build.js';
 
+export type * from './nodes.ts';
+export type * from './types.js';
 export { PostgresDialect } from './dialects/postgres.js';
 
 export const init: Init = ({ dialect }) => {
