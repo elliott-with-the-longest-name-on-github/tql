@@ -39,7 +39,7 @@ export interface Tql {
 	 * ### A simple query:
 	 * ```ts
 	 * const userId = 1234;
-	 * const [query, params] = query`SELECT * FROM users WHERE id = ${userId};`;
+	 * const [q, params] = query`SELECT * FROM users WHERE id = ${userId};`;
 	 * // ["SELECT * FROM users WHERE id = $1;", [1234]]
 	 * ```
 	 *
@@ -50,21 +50,21 @@ export interface Tql {
 	 *   { name: 'Alice', age: 30 },
 	 *   { name: 'Bob', age: 40 },
 	 * ]
-	 * const [query, params] = query`INSERT INTO users ${values(rows)}`;
+	 * const [q, params] = query`INSERT INTO users ${values(rows)}`;
 	 * // ['INSERT INTO users ("name", "age") VALUES ($1, $2), ($3, $4);', ['Alice', 30, 'Bob', 40]]
 	 * ```
 	 *
 	 * ### A single dynamic identifier:
 	 * ```ts
 	 * const column = 'name';
-	 * const [query, params] = query`SELECT ${identifier(column)} FROM users`;
+	 * const [q, params] = query`SELECT ${identifier(column)} FROM users`;
 	 * // ['SELECT "name" FROM users', []]
 	 * ```
 	 *
 	 * ### Dynamic identifiers:
 	 * ```ts
 	 * const columns = ['name', 'age'];
-	 * const [query, params] = query`SELECT ${identifiers(columns)} FROM users`;
+	 * const [q, params] = query`SELECT ${identifiers(columns)} FROM users`;
 	 * // ['SELECT "name", "age" FROM users', []]
 	 * ```
 	 *
@@ -108,7 +108,7 @@ export interface Tql {
 	 *
 	 * @example
 	 * ```ts
-	 * const [query, params] = query`SELECT * FROM users WHERE id IN ${list([1, 2, 3])}`;
+	 * const [q, params] = query`SELECT * FROM users WHERE id IN ${list([1, 2, 3])}`;
 	 * // ['SELECT * FROM users WHERE id IN ($1, $2, $3)', [1, 2, 3]]
 	 * ```
 	 *
@@ -126,7 +126,7 @@ export interface Tql {
 	 * ### A single row:
 	 * ```ts
 	 * const value = { name: 'Alice', age: 30 };
-	 * const [query, params] = query`INSERT INTO users ${values(value)}`;
+	 * const [q, params] = query`INSERT INTO users ${values(value)}`;
 	 * // ['INSERT INTO users ("name", "age") VALUES ($1, $2);', ['Alice', 30]]
 	 * ```
 	 *
@@ -136,7 +136,7 @@ export interface Tql {
 	 *  { name: 'Alice', age: 30 },
 	 *  { name: 'Bob', age: 40 },
 	 * ];
-	 * const [query, params] = query`INSERT INTO users ${values(values)}`;
+	 * const [q, params] = query`INSERT INTO users ${values(values)}`;
 	 * // ['INSERT INTO users ("name", "age") VALUES ($1, $2), ($3, $4);', ['Alice', 30, 'Bob', 40]]
 	 * ```
 	 *
@@ -153,7 +153,7 @@ export interface Tql {
 	 * ```ts
 	 * const userId = 1234;
 	 * const updatedUser = { name: 'vercelliott' };
-	 * const [query, params] = query`UPDATE users ${set(updatedUser)} WHERE user_id = ${userId};`;
+	 * const [q, params] = query`UPDATE users ${set(updatedUser)} WHERE user_id = ${userId};`;
 	 * // ['UPDATE users SET "name" = $1 WHERE user_id = $2;', ['vercelliott', 1234]]
 	 *
 	 * @param entry An object representing this SET clause.
@@ -170,7 +170,7 @@ export interface Tql {
 	 * ### Expose yourself to SQL injection attacks:
 	 * ```ts
 	 * const userInputName = "Robert'); DROP TABLE students; --";
-	 * const [query, params] = query(`INSERT INTO students ("name") VALUES ('${unsafe(userInputName)});`);
+	 * const [q, params] = query(`INSERT INTO students ("name") VALUES ('${unsafe(userInputName)});`);
 	 * // INSERT INTO students ("name") VALUES ('Robert'); DROP TABLE students; --');
 	 * ```
 	 * Don't do this, obviously.
