@@ -1,5 +1,11 @@
 # @sejohnson/tql
 
+## 0.0.2-beta.5
+
+### Patch Changes
+
+- 39274db: misc: Change API for `unsafe`, remove singluar `identifier`, update docs
+
 ## 0.0.2-beta.4
 
 ### Patch Changes
