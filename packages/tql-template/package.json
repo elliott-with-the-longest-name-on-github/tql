@@ -1,6 +1,6 @@
 {
 	"name": "@sejohnson/tql",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "A flexible, multi-dialect tagged template SQL query builder.",
 	"repository": {
 		"directory": "./packages/tql-template",
