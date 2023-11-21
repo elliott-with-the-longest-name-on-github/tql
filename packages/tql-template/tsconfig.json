@@ -15,9 +15,7 @@
 		"noUncheckedIndexedAccess": true,
 		"outDir": "dist",
 		"types": ["node"],
-		"declaration": true,
-		"declarationMap": true,
-		"sourceMap": true
+		"declaration": true
 	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules", "dist", "src/**/*.spec.ts", "src/dialects/test.ts"]
