@@ -38,6 +38,41 @@ describe('exports', () => {
 			expect(mocks.postprocess).toHaveBeenCalledWith('', []);
 		});
 
+		it('allows arrays as values', () => {
+			const filters = [fragment`AND user_id = ${1234}`, fragment`AND user_name = ${'retelliott'}`, 1234];
+			query`SELECT * FROM users WHERE 1=1 ${filters}`;
+			expect(mocks.preprocess).toHaveBeenCalledOnce();
+			expect(mocks.preprocess).toHaveBeenCalledWith(
+				new TqlQuery([
+					new TqlTemplateString('SELECT * FROM users WHERE 1=1 '),
+					new TqlFragment([new TqlTemplateString('AND user_id = '), new TqlParameter(1234), new TqlTemplateString('')]),
+					new TqlFragment([
+						new TqlTemplateString('AND user_name = '),
+						new TqlParameter('retelliott'),
+						new TqlTemplateString(''),
+					]),
+					new TqlParameter(1234),
+					new TqlTemplateString(''),
+				]),
+			);
+			expect(mocks.string).toHaveBeenCalledTimes(6);
+			expect(mocks.string).toHaveBeenNthCalledWith(1, new TqlTemplateString('SELECT * FROM users WHERE 1=1 '));
+			expect(mocks.string).toHaveBeenNthCalledWith(2, new TqlTemplateString('AND user_id = '));
+			expect(mocks.string).toHaveBeenNthCalledWith(3, new TqlTemplateString(''));
+			expect(mocks.string).toHaveBeenNthCalledWith(4, new TqlTemplateString('AND user_name = '));
+			expect(mocks.string).toHaveBeenNthCalledWith(5, new TqlTemplateString(''));
+			expect(mocks.string).toHaveBeenNthCalledWith(6, new TqlTemplateString(''));
+			expect(mocks.parameter).toHaveBeenCalledTimes(3);
+			expect(mocks.parameter).toHaveBeenNthCalledWith(1, new TqlParameter(1234));
+			expect(mocks.parameter).toHaveBeenNthCalledWith(2, new TqlParameter('retelliott'));
+			expect(mocks.parameter).toHaveBeenNthCalledWith(3, new TqlParameter(1234));
+			expect(mocks.identifiers).not.toHaveBeenCalled();
+			expect(mocks.list).not.toHaveBeenCalled();
+			expect(mocks.values).not.toHaveBeenCalled();
+			expect(mocks.postprocess).toHaveBeenCalledOnce();
+			expect(mocks.postprocess).toHaveBeenCalledWith('', []);
+		});
+
 		it('works recursively', () => {
 			query`SELECT * FROM (${fragment`SELECT * FROM users WHERE user_id = ${1234}`});`;
 			expect(mocks.preprocess).toHaveBeenCalledOnce();
