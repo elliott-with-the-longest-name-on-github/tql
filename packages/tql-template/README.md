@@ -74,6 +74,8 @@ Below, you can see the utilities returned from `init`, but here's a summary tabl
 | `set`         | `(entry: SetObject) => TqlSet`, where `SetObject` is `{ [columnName: string]: unknown }`.                                            | Accepts a record representing the SET clause, and returns a parameterized SET clause. See example below for a full explanation.                                                                                                                               |
 | `unsafe`      | `(str: string) => TqlTemplateString`                                                                                                 | Accepts a string and returns a representation of the string that will be inserted VERBATIM, UNESCAPED into the compiled query. Please, for all that is good, it's in the name -- this is unsafe. Do not use it unless you absolutely know your input is safe. |
 
+Important: Anywhere you pass a single value into `query` or `fragment`, you can also pass in an array of values. They'll be treated just as if you'd simply interpolated them right next to each other, with all the same protections.
+
 ### Parameters
 
 Anything directly passed into a template becomes a parameter. Essentially, the "holes" in the template are filled in with the dialect's parameter placeholder, and the value itself is passed directly into the parameters array:

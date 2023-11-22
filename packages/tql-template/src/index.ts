@@ -58,14 +58,16 @@ function parseTemplate<TResult extends TqlQuery | TqlFragment>(
 			continue;
 		}
 
-		const otherNodeRaw = values[i];
+		const interpolatedValues = (Array.isArray(values[i]) ? values[i] : [values[i]]) as unknown[];
 
-		if (!(otherNodeRaw instanceof TqlNode)) {
-			nodes[nodeInsertIndex++] = new TqlParameter(otherNodeRaw ?? null); // disallow undefined
-			continue;
+		for (const value of interpolatedValues) {
+			if (!(value instanceof TqlNode)) {
+				nodes[nodeInsertIndex++] = new TqlParameter(value ?? null); // disallow undefined
+				continue;
+			}
+
+			nodes[nodeInsertIndex++] = value;
 		}
-
-		nodes[nodeInsertIndex++] = otherNodeRaw;
 	}
 
 	return new FragmentCtor(nodes);
