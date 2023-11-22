@@ -1,5 +1,15 @@
 # @sejohnson/tql
 
+## 1.1.0
+
+### Minor Changes
+
+- dfd0d69: feat: Allow arrays as template values
+
+### Patch Changes
+
+- 0dd1ccf: fix: Remove old API from README
+
 ## 1.0.3
 
 ### Patch Changes
