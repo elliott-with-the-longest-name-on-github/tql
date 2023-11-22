@@ -9,7 +9,7 @@ TQL (Template-SQL -- unfortunately, T-SQL is already taken!) is a lightweight li
 ```ts
 import { init, PostgresDialect } from '@sejohnson/tql';
 
-const { query, fragment, identifier, identifiers, list, values, set, unsafe } = init({ dialect: PostgresDialect });
+const { query, fragment, identifiers, list, values, set, unsafe } = init({ dialect: PostgresDialect });
 
 const [q, params] = query`SELECT * FROM users`;
 // output: ['SELECT * FROM users', []]
