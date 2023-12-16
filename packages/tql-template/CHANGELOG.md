@@ -1,5 +1,15 @@
 # @sejohnson/tql
 
+## 2.0.0
+
+### Major Changes
+
+- 37e915c: breaking: Capitalize SQL-clause-generating functions
+
+### Minor Changes
+
+- 37e915c: feat: Add `join` API
+
 ## 1.1.0
 
 ### Minor Changes
