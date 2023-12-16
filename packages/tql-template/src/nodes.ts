@@ -3,10 +3,9 @@ import type { SetObject, ValuesObject } from './types.js';
 export const tqlNodeTypes = [
 	'list',
 	'parameter',
-	'string',
+	'templateString',
 	'values',
-	'update-set',
-	'query',
+	'set',
 	'fragment',
 	'identifiers',
 ] as const;
@@ -49,9 +48,9 @@ export class TqlParameter extends TqlNode<'parameter'> {
  * A string literal. These are ONLY created by the `tql` template tag -- i.e. these strings are written by the developer,
  * not the user.
  */
-export class TqlTemplateString extends TqlNode<'string'> {
+export class TqlTemplateString extends TqlNode<'templateString'> {
 	constructor(public readonly value: string) {
-		super('string');
+		super('templateString');
 	}
 }
 
@@ -70,9 +69,9 @@ export class TqlValues extends TqlNode<'values'> {
  * A SET clause. Given a record, the record keys are column names and the corresponding values are the values for that column.
  * The dialect should write the full SET clause, i.e. `SET "col_1" = $1, "col_2" = $2`.
  */
-export class TqlSet extends TqlNode<'update-set'> {
+export class TqlSet extends TqlNode<'set'> {
 	constructor(public readonly values: SetObject) {
-		super('update-set');
+		super('set');
 	}
 }
 
@@ -93,7 +92,7 @@ export class TqlSet extends TqlNode<'update-set'> {
  * 2. Have two separate functions, one which returns a nestable value, and the other which returns a compiled query. Hence, `query` and `fragment`.
  */
 export class TqlFragment extends TqlNode<'fragment'> {
-	constructor(public readonly nodes: TqlNode<Exclude<TqlNodeType, 'query'>>[]) {
+	constructor(public readonly nodes: TqlNode[]) {
 		super('fragment');
 	}
 }
@@ -102,8 +101,6 @@ export class TqlFragment extends TqlNode<'fragment'> {
  * This represents the input to a `query` tagged function. It is a list of nodes, which can be either strings (represented by {@link TqlTemplateString})
  * or any other {@link TqlNode} type, including {@link TqlFragment} instances. It cannot recursively include {@link TqlQuery} instances.
  */
-export class TqlQuery extends TqlNode<'query'> {
-	constructor(public readonly nodes: TqlNode<Exclude<TqlNodeType, 'query'>>[]) {
-		super('query');
-	}
+export class TqlQuery {
+	constructor(public readonly nodes: TqlNode[]) {}
 }

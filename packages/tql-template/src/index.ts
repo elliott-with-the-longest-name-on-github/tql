@@ -1,4 +1,4 @@
-import { createQueryBuilder, isTemplateStringsArray } from './utils.js';
+import { createQueryBuilder, isTemplateStringsArray, join } from './utils.js';
 import { TqlError } from './error.js';
 import type { CompiledQuery, Init } from './types.js';
 import {
@@ -10,16 +10,22 @@ import {
 	TqlFragment,
 	TqlTemplateString,
 	TqlValues,
-	type TqlNodeType,
 	TqlSet,
 } from './nodes.js';
 import { build } from './build.js';
+import type { Tql } from './types.js';
 
 export type * from './nodes.ts';
 export type * from './types.js';
 export { PostgresDialect } from './dialects/postgres.js';
 
 export const init: Init = ({ dialect }) => {
+	const fragment = Object.defineProperty(
+		(strings: TemplateStringsArray, ...values: unknown[]) => parseTemplate(TqlFragment, strings, values),
+		'join',
+		join,
+	) as Tql['fragment'];
+
 	return {
 		query: (strings, ...values): CompiledQuery => {
 			const query = parseTemplate(TqlQuery, strings, values);
@@ -29,17 +35,18 @@ export const init: Init = ({ dialect }) => {
 			build(d, preprocessed);
 			return d.postprocess(qb.query, qb.params);
 		},
-		fragment: (strings, ...values) => parseTemplate(TqlFragment, strings, values),
-		identifiers: (ids) => new TqlIdentifiers(ids),
-		list: (vals) => new TqlList(vals),
-		values: (entries) => new TqlValues(entries),
-		set: (entries) => new TqlSet(entries),
-		unsafe: (str) => new TqlTemplateString(str),
+		fragment,
+		IDENTIFIER: (identifier) => new TqlIdentifiers(identifier),
+		IDENTIFIERS: (identifiers) => new TqlIdentifiers(identifiers),
+		LIST: (list) => new TqlList(list),
+		VALUES: (entries) => new TqlValues(entries),
+		SET: (entries) => new TqlSet(entries),
+		UNSAFE: (str) => new TqlTemplateString(str),
 	};
 };
 
 function parseTemplate<TResult extends TqlQuery | TqlFragment>(
-	FragmentCtor: new (nodes: TqlNode<Exclude<TqlNodeType, 'query'>>[]) => TResult,
+	FragmentCtor: new (nodes: TqlNode[]) => TResult,
 	strings: TemplateStringsArray,
 	values: unknown[],
 ): TResult {
@@ -47,7 +54,7 @@ function parseTemplate<TResult extends TqlQuery | TqlFragment>(
 		throw new TqlError('untemplated_sql_call');
 	}
 
-	const nodes: TqlNode<Exclude<TqlNodeType, 'query'>>[] = [];
+	const nodes: TqlNode[] = [];
 
 	let nodeInsertIndex = 0;
 	for (let i = 0; i < strings.length; i++) {
@@ -62,6 +69,9 @@ function parseTemplate<TResult extends TqlQuery | TqlFragment>(
 
 		for (const value of interpolatedValues) {
 			if (!(value instanceof TqlNode)) {
+				if (value instanceof TqlQuery) {
+					throw new TqlError('illegal_query_recursion');
+				}
 				nodes[nodeInsertIndex++] = new TqlParameter(value ?? null); // disallow undefined
 				continue;
 			}

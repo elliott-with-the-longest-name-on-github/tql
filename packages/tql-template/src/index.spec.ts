@@ -9,14 +9,14 @@ describe('exports', () => {
 	const { Dialect, mocks } = createTestDialect();
 	let query: Tql['query'];
 	let fragment: Tql['fragment'];
-	let identifiers: Tql['identifiers'];
-	let list: Tql['list'];
-	let values: Tql['values'];
-	let unsafe: Tql['unsafe'];
+	let IDENTIFIERS: Tql['IDENTIFIERS'];
+	let LIST: Tql['LIST'];
+	let VALUES: Tql['VALUES'];
+	let UNSAFE: Tql['UNSAFE'];
 
 	beforeEach(() => {
 		vi.restoreAllMocks();
-		({ query, fragment, identifiers, list, values, unsafe } = init({
+		({ query, fragment, IDENTIFIERS, LIST, VALUES, UNSAFE } = init({
 			dialect: Dialect,
 		}));
 	});
@@ -24,12 +24,12 @@ describe('exports', () => {
 	// This suite should really just verify that `query` is adhering to the contract it has with Dialect
 	// i.e. that it's calling the correct dialect methods with the correct data given a certain input.
 	describe('query and fragment', () => {
-		it('only calls the dialect `string` method for a simple query', () => {
+		it('only calls the dialect `templateString` method for a simple query', () => {
 			query`SELECT * FROM users`;
 			expect(mocks.preprocess).toHaveBeenCalledOnce();
 			expect(mocks.preprocess).toHaveBeenCalledWith(new TqlQuery([new TqlTemplateString('SELECT * FROM users')]));
-			expect(mocks.string).toHaveBeenCalledOnce();
-			expect(mocks.string).toHaveBeenCalledWith(new TqlTemplateString('SELECT * FROM users'));
+			expect(mocks.templateString).toHaveBeenCalledOnce();
+			expect(mocks.templateString).toHaveBeenCalledWith(new TqlTemplateString('SELECT * FROM users'));
 			expect(mocks.parameter).not.toHaveBeenCalled();
 			expect(mocks.identifiers).not.toHaveBeenCalled();
 			expect(mocks.list).not.toHaveBeenCalled();
@@ -55,13 +55,13 @@ describe('exports', () => {
 					new TqlTemplateString(''),
 				]),
 			);
-			expect(mocks.string).toHaveBeenCalledTimes(6);
-			expect(mocks.string).toHaveBeenNthCalledWith(1, new TqlTemplateString('SELECT * FROM users WHERE 1=1 '));
-			expect(mocks.string).toHaveBeenNthCalledWith(2, new TqlTemplateString('AND user_id = '));
-			expect(mocks.string).toHaveBeenNthCalledWith(3, new TqlTemplateString(''));
-			expect(mocks.string).toHaveBeenNthCalledWith(4, new TqlTemplateString('AND user_name = '));
-			expect(mocks.string).toHaveBeenNthCalledWith(5, new TqlTemplateString(''));
-			expect(mocks.string).toHaveBeenNthCalledWith(6, new TqlTemplateString(''));
+			expect(mocks.templateString).toHaveBeenCalledTimes(6);
+			expect(mocks.templateString).toHaveBeenNthCalledWith(1, new TqlTemplateString('SELECT * FROM users WHERE 1=1 '));
+			expect(mocks.templateString).toHaveBeenNthCalledWith(2, new TqlTemplateString('AND user_id = '));
+			expect(mocks.templateString).toHaveBeenNthCalledWith(3, new TqlTemplateString(''));
+			expect(mocks.templateString).toHaveBeenNthCalledWith(4, new TqlTemplateString('AND user_name = '));
+			expect(mocks.templateString).toHaveBeenNthCalledWith(5, new TqlTemplateString(''));
+			expect(mocks.templateString).toHaveBeenNthCalledWith(6, new TqlTemplateString(''));
 			expect(mocks.parameter).toHaveBeenCalledTimes(3);
 			expect(mocks.parameter).toHaveBeenNthCalledWith(1, new TqlParameter(1234));
 			expect(mocks.parameter).toHaveBeenNthCalledWith(2, new TqlParameter('retelliott'));
@@ -87,11 +87,14 @@ describe('exports', () => {
 					new TqlTemplateString(');'),
 				]),
 			);
-			expect(mocks.string).toHaveBeenCalledTimes(4);
-			expect(mocks.string).toHaveBeenNthCalledWith(1, new TqlTemplateString('SELECT * FROM ('));
-			expect(mocks.string).toHaveBeenNthCalledWith(2, new TqlTemplateString('SELECT * FROM users WHERE user_id = '));
-			expect(mocks.string).toHaveBeenNthCalledWith(3, new TqlTemplateString(''));
-			expect(mocks.string).toHaveBeenNthCalledWith(4, new TqlTemplateString(');'));
+			expect(mocks.templateString).toHaveBeenCalledTimes(4);
+			expect(mocks.templateString).toHaveBeenNthCalledWith(1, new TqlTemplateString('SELECT * FROM ('));
+			expect(mocks.templateString).toHaveBeenNthCalledWith(
+				2,
+				new TqlTemplateString('SELECT * FROM users WHERE user_id = '),
+			);
+			expect(mocks.templateString).toHaveBeenNthCalledWith(3, new TqlTemplateString(''));
+			expect(mocks.templateString).toHaveBeenNthCalledWith(4, new TqlTemplateString(');'));
 			expect(mocks.parameter).toHaveBeenCalledOnce();
 			expect(mocks.parameter).toHaveBeenCalledWith(new TqlParameter(1234));
 			expect(mocks.identifiers).not.toHaveBeenCalled();
@@ -104,7 +107,7 @@ describe('exports', () => {
 
 	describe('identifiers', () => {
 		it('creates an identifiers object', () => {
-			const result = identifiers(['column_name_1', 'column_name_2']);
+			const result = IDENTIFIERS(['column_name_1', 'column_name_2']);
 			expect(result).toBeInstanceOf(TqlIdentifiers);
 			expect(result.values).toEqual(['column_name_1', 'column_name_2']);
 		});
@@ -112,7 +115,7 @@ describe('exports', () => {
 
 	describe('list', () => {
 		it('creates a list object', () => {
-			const result = list(['column_name_1', 'column_name_2']);
+			const result = LIST(['column_name_1', 'column_name_2']);
 			expect(result).toBeInstanceOf(TqlList);
 			expect(result.values).toEqual(['column_name_1', 'column_name_2']);
 		});
@@ -121,7 +124,7 @@ describe('exports', () => {
 	describe('values', () => {
 		it('creates a values object given a single object', () => {
 			const value = { one: 1, two: 2, three: { number: 3 } };
-			const result = values(value);
+			const result = VALUES(value);
 			expect(result).toBeInstanceOf(TqlValues);
 			expect(result.values).toEqual(value);
 		});
@@ -131,7 +134,7 @@ describe('exports', () => {
 				{ one: 1, two: 2, three: { number: 3 } },
 				{ one: 1, two: 2, three: { number: 3 } },
 			];
-			const result = values(value);
+			const result = VALUES(value);
 			expect(result).toBeInstanceOf(TqlValues);
 			expect(result.values).toEqual(value);
 		});
@@ -139,7 +142,7 @@ describe('exports', () => {
 
 	describe('unsafe', () => {
 		it('creates a TqlTemplateString object', () => {
-			const result = unsafe(`SELECT * FROM users WHERE id = ${1234}`);
+			const result = UNSAFE(`SELECT * FROM users WHERE id = ${1234}`);
 			expect(result).toBeInstanceOf(TqlTemplateString);
 			expect(result.value).toEqual('SELECT * FROM users WHERE id = 1234');
 		});
@@ -150,15 +153,16 @@ describe('integration', () => {
 	describe('postgres', () => {
 		let query: Tql['query'];
 		let fragment: Tql['fragment'];
-		let identifiers: Tql['identifiers'];
-		let list: Tql['list'];
-		let values: Tql['values'];
+		let IDENTIFIER: Tql['IDENTIFIER'];
+		let IDENTIFIERS: Tql['IDENTIFIERS'];
+		let LIST: Tql['LIST'];
+		let VALUES: Tql['VALUES'];
 
 		beforeEach(() => {
 			const qb = createQueryBuilder();
 			qb.appendToParams = vi.fn().mockImplementation(qb.appendToParams);
 			qb.appendToQuery = vi.fn().mockImplementation(qb.appendToQuery);
-			({ query, fragment, identifiers, list, values } = init({
+			({ query, fragment, IDENTIFIER, IDENTIFIERS, LIST, VALUES } = init({
 				dialect: PostgresDialect,
 			}));
 		});
@@ -173,7 +177,7 @@ describe('integration', () => {
 
 		it('produces a correct INSERT query', () => {
 			const [q, params] = query`
-        INSERT INTO users ${values({ name: 'vercelliott' })};
+        INSERT INTO users ${VALUES({ name: 'vercelliott' })};
       `;
 			expect(q).toBe('\n        INSERT INTO users ("name") VALUES ($1);\n      ');
 			expect(params).toEqual(['vercelliott']);
@@ -181,7 +185,7 @@ describe('integration', () => {
 
 		it('produces a correct query with a list', () => {
 			const [q, params] = query`
-        SELECT * FROM users WHERE user_id IN ${list([1, 2, 3, 4])};
+        SELECT * FROM users WHERE user_id IN ${LIST([1, 2, 3, 4])};
       `;
 			expect(q).toBe('\n        SELECT * FROM users WHERE user_id IN ($1, $2, $3, $4);\n      ');
 			expect(params).toEqual([1, 2, 3, 4]);
@@ -189,7 +193,7 @@ describe('integration', () => {
 
 		it('produces a correct query with dynamic identifiers', () => {
 			const [q, params] = query`
-        SELECT ${identifiers('name')}, ${identifiers([
+        SELECT ${IDENTIFIER('name')}, ${IDENTIFIERS([
 				'email',
 				'birthdate',
 				'gender',
@@ -214,7 +218,7 @@ describe('integration', () => {
 		});
 
 		it('correctly parameterizes complex queries', () => {
-			const insertClause = fragment`INSERT INTO users ${values({ name: 'vercelliott' })}`;
+			const insertClause = fragment`INSERT INTO users ${VALUES({ name: 'vercelliott' })}`;
 			const updateClause = fragment`UPDATE users SET name = ${'reselliott'} WHERE name = ${'vercelliott'}`;
 			const selectClause = fragment`SELECT * FROM users WHERE name = ${'reselliott'}`;
 			const [q, params] = query`
