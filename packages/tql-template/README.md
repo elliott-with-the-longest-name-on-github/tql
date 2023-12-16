@@ -9,16 +9,7 @@ TQL (Template-SQL) is a lightweight library for writing SQL in TypeScript:
 ```ts
 import { init, PostgresDialect } from '@sejohnson/tql';
 
-const { 
-  query,
-  fragment,
-  IDENTIFIER,
-  IDENTIFIERS,
-  LIST,
-  VALUES, 
-  SET, 
-  UNSAFE 
-} = init({ dialect: PostgresDialect });
+const { query, fragment, IDENTIFIER, IDENTIFIERS, LIST, VALUES, SET, UNSAFE } = init({ dialect: PostgresDialect });
 
 const [q, params] = query`SELECT * FROM users`;
 // output: ['SELECT * FROM users', []]
@@ -77,8 +68,8 @@ Below, you can see the utilities returned from `init`, but here's a summary tabl
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `query`       | `(strings: TemplateStringsArray, ...values: unknown[]) => [string, unknown[]]`                                                       | The top-level query object. Returns a tuple of the SQL query string and an array of parameters. Pass both of these to your database driver.                                                                                                                   |
 | `fragment`    | `(strings: TemplateStringsArray, ...values: unknown[]) => [string, unknown[]]`                                                       | Has the same API as `query`, but returns a `TqlFragment` node which can be recursively nested within itself and included in a top-level `query`.                                                                                                              |
-| `IDENTIFIER` | <code>(identifier: string &#124; string[]) => TqlIdentifiers</code>                                                                         | Accepts a string, escapes it, and inserts it into the query as an identifier (a table or column name). Identifiers are safe and easy to escape, unlike query values!   
-| `IDENTIFIERS` | <code>(identifiers: string &#124; string[]) => TqlIdentifiers</code>                                                                         | Accepts a list of strings, escapes them, and inserts them into the query as identifiers (table or column names). Identifiers are safe and easy to escape, unlike query values!                         |
+| `IDENTIFIER`  | <code>(identifier: string &#124; string[]) => TqlIdentifiers</code>                                                                  | Accepts a string, escapes it, and inserts it into the query as an identifier (a table or column name). Identifiers are safe and easy to escape, unlike query values!                                                                                          |
+| `IDENTIFIERS` | <code>(identifiers: string &#124; string[]) => TqlIdentifiers</code>                                                                 | Accepts a list of strings, escapes them, and inserts them into the query as identifiers (table or column names). Identifiers are safe and easy to escape, unlike query values!                                                                                |
 | `LIST`        | `(parameters: unknown[]) => TqlList`                                                                                                 | Accepts a list of anything and inserts it into the query as a parameterized list. For example, `[1, 2, 3]` would become `($1, $2, $3)` with the original values stored in the parameters array.                                                               |
 | `VALUES`      | `(entries: ValuesObject) => TqlValues`, where `ValuesObject` is `{ [columnName: string]: unknown }` or an array of that object type. | Accepts an array of records (or, for convenience, a single record) and builds a VALUES clause out of it. See the example below for a full explanation.                                                                                                        |
 | `SET`         | `(entry: SetObject) => TqlSet`, where `SetObject` is `{ [columnName: string]: unknown }`.                                            | Accepts a record representing the SET clause, and returns a parameterized SET clause. See example below for a full explanation.                                                                                                                               |
@@ -133,11 +124,11 @@ if (firstName) filters.push(fragment`firstName = ${firstName}`);
 
 let whereClause = fragment``;
 if (filters.length > 0) {
-  // note that the delimiter is a fragment -- if you were to pass just the string
-  // ` AND `, `query` would end up substituting parameters in place of it, as "naked" strings
-  // are untrustworthy.
-  joinedFilters = fragment.join(fragment` AND `, filters);
-  whereClause = fragment`WHERE ${joinedFilters}`;
+	// note that the delimiter is a fragment -- if you were to pass just the string
+	// ` AND `, `query` would end up substituting parameters in place of it, as "naked" strings
+	// are untrustworthy.
+	joinedFilters = fragment.join(fragment` AND `, filters);
+	whereClause = fragment`WHERE ${joinedFilters}`;
 }
 const [q, params] = query`SELECT * FROM users ${whereClause};`;
 // output: [
@@ -157,7 +148,7 @@ const cte = fragment`${select} ${from} ${where}`;
 const [q, params] = query`
 WITH user AS (${cte})
 SELECT * FROM user;
-`
+`;
 // output: [
 //   `WITH user AS (SELECT * FROM users WHERE user_id = $1)
 //    SELECT * FROM user`,
