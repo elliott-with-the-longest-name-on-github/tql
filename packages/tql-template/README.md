@@ -133,7 +133,10 @@ if (firstName) filters.push(fragment`firstName = ${firstName}`);
 
 let whereClause = fragment``;
 if (filters.length > 0) {
-  joinedFilters = fragment` AND `.join(...filters);
+  // note that the delimiter is a fragment -- if you were to pass just the string
+  // ` AND `, `query` would end up substituting parameters in place of it, as "naked" strings
+  // are untrustworthy.
+  joinedFilters = fragment.join(fragment` AND `, filters);
   whereClause = fragment`WHERE ${joinedFilters}`;
 }
 const [q, params] = query`SELECT * FROM users ${whereClause};`;
