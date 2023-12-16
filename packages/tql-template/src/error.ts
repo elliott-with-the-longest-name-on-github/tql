@@ -20,6 +20,10 @@ const messages = {
 	values_records_mismatch: (diff: ColumnDiff) => formatValuesRecordsMismatchMessage(diff),
 	values_records_empty: () => 'The records passed to `values` must not be empty.',
 	illegal_query_recursion: () => 'Found a nested call to `query`. If you need to nest queries, use `fragment`.',
+	illegal_join_delimiter_type: (type: string) =>
+		`To prevent SQL injection, \`join\` can only be used with a \`fragment\` as a delimiter. Detected type: ${type}.`,
+	illegal_node_type_in_build: (badNode: unknown) =>
+		`Encountered a non-TQL-node type while trying to build a query. This could indicate attempted SQL injection. Received: ${badNode}`,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 } as const satisfies Record<string, (...args: any[]) => string>;
 

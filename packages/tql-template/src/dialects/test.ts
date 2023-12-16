@@ -5,9 +5,8 @@ import { vi, type MockedFunction } from 'vitest';
 export function createTestDialect(): {
 	Dialect: Dialect;
 	mocks: {
-		string: MockedFunction<DialectImpl['string']>;
+		templateString: MockedFunction<DialectImpl['templateString']>;
 		parameter: MockedFunction<DialectImpl['parameter']>;
-		identifier: MockedFunction<DialectImpl['identifier']>;
 		identifiers: MockedFunction<DialectImpl['identifiers']>;
 		list: MockedFunction<DialectImpl['list']>;
 		values: MockedFunction<DialectImpl['values']>;
@@ -17,9 +16,8 @@ export function createTestDialect(): {
 	};
 } {
 	const mocks = {
-		string: vi.fn(),
+		templateString: vi.fn(),
 		parameter: vi.fn(),
-		identifier: vi.fn(),
 		identifiers: vi.fn(),
 		list: vi.fn(),
 		values: vi.fn(),
@@ -28,9 +26,8 @@ export function createTestDialect(): {
 		postprocess: vi.fn<[string, unknown[]], [string, unknown[]]>((query, params) => [query, params]),
 	};
 	class TestDialect extends BaseDialect implements DialectImpl {
-		string = mocks.string;
+		templateString = mocks.templateString;
 		parameter = mocks.parameter;
-		identifier = mocks.identifier;
 		identifiers = mocks.identifiers;
 		list = mocks.list;
 		values = mocks.values;

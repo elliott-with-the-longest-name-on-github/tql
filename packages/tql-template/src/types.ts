@@ -14,7 +14,7 @@ export type ValuesObject = { [columnName: string]: unknown } | { [columnName: st
 
 export interface DialectImpl {
 	preprocess(fragment: TqlQuery): TqlQuery;
-	string(str: TqlTemplateString): void;
+	templateString(str: TqlTemplateString): void;
 	parameter(param: TqlParameter): void;
 	identifiers(ids: TqlIdentifiers): void;
 	list(vals: TqlList): void;
@@ -94,7 +94,10 @@ export interface Tql {
 	 * ```
 	 * @returns A value that can be included recursively in other calls to {@link fragment} and in calls to {@link query}.
 	 */
-	fragment: (strings: TemplateStringsArray, ...values: unknown[]) => TqlFragment;
+	fragment: {
+		(strings: TemplateStringsArray, ...values: unknown[]): TqlFragment;
+		join: (delimiter: TqlFragment, values: unknown[]) => TqlFragment;
+	};
 
 	/**
 	 * The same as {@link identifier}, but for multiple identifiers. These will be comma-separated by the driver.

@@ -4,7 +4,7 @@
 pnpm i @sejohnson/tql
 ```
 
-TQL (Template-SQL -- unfortunately, T-SQL is already taken!) is a lightweight library for writing SQL in TypeScript:
+TQL (Template-SQL) is a lightweight library for writing SQL in TypeScript:
 
 ```ts
 import { init, PostgresDialect } from '@sejohnson/tql';
@@ -108,6 +108,49 @@ const [q, params] = query`SELECT * FROM users ${whereClause}`;
 ```
 
 Fragments can be nested recursively, so the possibilities are endless.
+
+If you need to combine a group of fragments, you can use `fragment.join`, which works a bit like Python's `String.join` API:
+
+```ts
+const maxAge = 30;
+const minAge = 25;
+const firstName = undefined;
+
+const filters = [];
+if (maxAge) filters.push(fragment`age < ${maxAge}`);
+if (minAge) filters.push(fragment`age > ${minAge}`);
+if (firstName) filters.push(fragment`firstName = ${firstName}`);
+
+let whereClause = fragment``;
+if (filters.length > 0) {
+  joinedFilters = fragment` AND `.join(...filters);
+  whereClause = fragment`WHERE ${joinedFilters}`;
+}
+const [q, params] = query`SELECT * FROM users ${whereClause};`;
+// output: [
+//   'SELECT * FROM users WHERE age < $1 AND age > $2;',
+//   [30, 25]
+// ]
+```
+
+If you need to arbitrarily combine templates, don't forget that they're nestable:
+
+```ts
+const select = fragment`SELECT *`;
+const from = fragment`FROM users`;
+const where = fragment`WHERE user_id = ${1234}`;
+// somehow, the paramters will all be interpolated in the right order, no matter what!
+const cte = fragment`${select} ${from} ${where}`;
+const [q, params] = query`
+WITH user AS (${cte})
+SELECT * FROM user;
+`
+// output: [
+//   `WITH user AS (SELECT * FROM users WHERE user_id = $1)
+//    SELECT * FROM user`,
+//   [1234]
+// ]
+```
 
 ### Identifiers
 

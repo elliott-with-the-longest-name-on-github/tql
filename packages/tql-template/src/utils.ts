@@ -1,8 +1,10 @@
+import { TqlError } from './error.js';
+import { TqlFragment, TqlNode, TqlParameter, TqlQuery } from './nodes.js';
+
 export function isTemplateStringsArray(value: unknown): value is TemplateStringsArray {
 	return Array.isArray(value) && value.hasOwnProperty('raw');
 }
 
-// TODO: Test
 export function createQueryBuilder(): {
 	readonly query: string;
 	readonly params: unknown[];
@@ -30,10 +32,27 @@ export function createQueryBuilder(): {
 	};
 }
 
-// TODO: test
-export function pluralize(str: string, plural: boolean, suffix = 's'): string {
-	if (plural) {
-		return `${str}${suffix}`;
+export function unpackNodeValue(value: unknown): TqlNode[] {
+	if (value instanceof TqlQuery) {
+		throw new TqlError('illegal_query_recursion');
 	}
-	return str;
+	if (value instanceof TqlFragment) {
+		return value.nodes;
+	}
+	if (value instanceof TqlNode) {
+		return [value];
+	}
+	return [new TqlParameter(value)];
+}
+
+export function join(delimiter: unknown, values: unknown[]): TqlFragment {
+	if (values.length === 0) return new TqlFragment([]);
+	const firstValue = values.shift();
+	const nodes = [...unpackNodeValue(firstValue)];
+	const unpackedDelimiter = unpackNodeValue(delimiter);
+	for (const value of values) {
+		nodes.push(...unpackedDelimiter);
+		nodes.push(...unpackNodeValue(value));
+	}
+	return new TqlFragment(nodes);
 }

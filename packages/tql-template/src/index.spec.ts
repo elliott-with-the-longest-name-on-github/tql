@@ -24,12 +24,12 @@ describe('exports', () => {
 	// This suite should really just verify that `query` is adhering to the contract it has with Dialect
 	// i.e. that it's calling the correct dialect methods with the correct data given a certain input.
 	describe('query and fragment', () => {
-		it('only calls the dialect `string` method for a simple query', () => {
+		it('only calls the dialect `templateString` method for a simple query', () => {
 			query`SELECT * FROM users`;
 			expect(mocks.preprocess).toHaveBeenCalledOnce();
 			expect(mocks.preprocess).toHaveBeenCalledWith(new TqlQuery([new TqlTemplateString('SELECT * FROM users')]));
-			expect(mocks.string).toHaveBeenCalledOnce();
-			expect(mocks.string).toHaveBeenCalledWith(new TqlTemplateString('SELECT * FROM users'));
+			expect(mocks.templateString).toHaveBeenCalledOnce();
+			expect(mocks.templateString).toHaveBeenCalledWith(new TqlTemplateString('SELECT * FROM users'));
 			expect(mocks.parameter).not.toHaveBeenCalled();
 			expect(mocks.identifiers).not.toHaveBeenCalled();
 			expect(mocks.list).not.toHaveBeenCalled();
@@ -55,13 +55,13 @@ describe('exports', () => {
 					new TqlTemplateString(''),
 				]),
 			);
-			expect(mocks.string).toHaveBeenCalledTimes(6);
-			expect(mocks.string).toHaveBeenNthCalledWith(1, new TqlTemplateString('SELECT * FROM users WHERE 1=1 '));
-			expect(mocks.string).toHaveBeenNthCalledWith(2, new TqlTemplateString('AND user_id = '));
-			expect(mocks.string).toHaveBeenNthCalledWith(3, new TqlTemplateString(''));
-			expect(mocks.string).toHaveBeenNthCalledWith(4, new TqlTemplateString('AND user_name = '));
-			expect(mocks.string).toHaveBeenNthCalledWith(5, new TqlTemplateString(''));
-			expect(mocks.string).toHaveBeenNthCalledWith(6, new TqlTemplateString(''));
+			expect(mocks.templateString).toHaveBeenCalledTimes(6);
+			expect(mocks.templateString).toHaveBeenNthCalledWith(1, new TqlTemplateString('SELECT * FROM users WHERE 1=1 '));
+			expect(mocks.templateString).toHaveBeenNthCalledWith(2, new TqlTemplateString('AND user_id = '));
+			expect(mocks.templateString).toHaveBeenNthCalledWith(3, new TqlTemplateString(''));
+			expect(mocks.templateString).toHaveBeenNthCalledWith(4, new TqlTemplateString('AND user_name = '));
+			expect(mocks.templateString).toHaveBeenNthCalledWith(5, new TqlTemplateString(''));
+			expect(mocks.templateString).toHaveBeenNthCalledWith(6, new TqlTemplateString(''));
 			expect(mocks.parameter).toHaveBeenCalledTimes(3);
 			expect(mocks.parameter).toHaveBeenNthCalledWith(1, new TqlParameter(1234));
 			expect(mocks.parameter).toHaveBeenNthCalledWith(2, new TqlParameter('retelliott'));
@@ -87,11 +87,14 @@ describe('exports', () => {
 					new TqlTemplateString(');'),
 				]),
 			);
-			expect(mocks.string).toHaveBeenCalledTimes(4);
-			expect(mocks.string).toHaveBeenNthCalledWith(1, new TqlTemplateString('SELECT * FROM ('));
-			expect(mocks.string).toHaveBeenNthCalledWith(2, new TqlTemplateString('SELECT * FROM users WHERE user_id = '));
-			expect(mocks.string).toHaveBeenNthCalledWith(3, new TqlTemplateString(''));
-			expect(mocks.string).toHaveBeenNthCalledWith(4, new TqlTemplateString(');'));
+			expect(mocks.templateString).toHaveBeenCalledTimes(4);
+			expect(mocks.templateString).toHaveBeenNthCalledWith(1, new TqlTemplateString('SELECT * FROM ('));
+			expect(mocks.templateString).toHaveBeenNthCalledWith(
+				2,
+				new TqlTemplateString('SELECT * FROM users WHERE user_id = '),
+			);
+			expect(mocks.templateString).toHaveBeenNthCalledWith(3, new TqlTemplateString(''));
+			expect(mocks.templateString).toHaveBeenNthCalledWith(4, new TqlTemplateString(');'));
 			expect(mocks.parameter).toHaveBeenCalledOnce();
 			expect(mocks.parameter).toHaveBeenCalledWith(new TqlParameter(1234));
 			expect(mocks.identifiers).not.toHaveBeenCalled();

@@ -1,4 +1,4 @@
-import { it, describe, expect } from 'vitest';
+import { it, describe, expect, test } from 'vitest';
 import {
 	TqlIdentifiers,
 	TqlList,
@@ -28,7 +28,7 @@ describe('nodes', () => {
 			instance: new TqlParameter(1),
 		},
 		{
-			type: 'string',
+			type: 'templateString',
 			Ctor: TqlTemplateString,
 			instance: new TqlTemplateString('foo'),
 		},
@@ -36,11 +36,6 @@ describe('nodes', () => {
 			type: 'values',
 			Ctor: TqlValues,
 			instance: new TqlValues([{ foo: 'bar' }]),
-		},
-		{
-			type: 'query',
-			Ctor: TqlQuery,
-			instance: new TqlQuery([]),
 		},
 		{
 			type: 'fragment',
@@ -51,5 +46,9 @@ describe('nodes', () => {
 		expect(instance.type).toBe(type);
 		expect(instance).toBeInstanceOf(Ctor);
 		expect(instance).toBeInstanceOf(TqlNode);
+	});
+
+	test('TqlQuery should not extend TqlNode', () => {
+		expect(new TqlQuery([])).not.toBeInstanceOf(TqlNode);
 	});
 });

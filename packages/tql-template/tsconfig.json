@@ -4,8 +4,8 @@
 		"noEmit": false,
 		"strict": true,
 		"target": "ES2019",
-		"module": "esnext",
-		"moduleResolution": "bundler",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
 		"allowSyntheticDefaultImports": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
@@ -15,7 +15,7 @@
 		"noUncheckedIndexedAccess": true,
 		"outDir": "dist",
 		"types": ["node"],
-		"declaration": true
+		"declaration": true,
 	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules", "dist", "src/**/*.spec.ts", "src/dialects/test.ts"]
