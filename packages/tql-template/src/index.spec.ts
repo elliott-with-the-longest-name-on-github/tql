@@ -9,14 +9,14 @@ describe('exports', () => {
 	const { Dialect, mocks } = createTestDialect();
 	let query: Tql['query'];
 	let fragment: Tql['fragment'];
-	let identifiers: Tql['identifiers'];
-	let list: Tql['list'];
-	let values: Tql['values'];
-	let unsafe: Tql['unsafe'];
+	let IDENTIFIERS: Tql['IDENTIFIERS'];
+	let LIST: Tql['LIST'];
+	let VALUES: Tql['VALUES'];
+	let UNSAFE: Tql['UNSAFE'];
 
 	beforeEach(() => {
 		vi.restoreAllMocks();
-		({ query, fragment, identifiers, list, values, unsafe } = init({
+		({ query, fragment, IDENTIFIERS, LIST, VALUES, UNSAFE } = init({
 			dialect: Dialect,
 		}));
 	});
@@ -107,7 +107,7 @@ describe('exports', () => {
 
 	describe('identifiers', () => {
 		it('creates an identifiers object', () => {
-			const result = identifiers(['column_name_1', 'column_name_2']);
+			const result = IDENTIFIERS(['column_name_1', 'column_name_2']);
 			expect(result).toBeInstanceOf(TqlIdentifiers);
 			expect(result.values).toEqual(['column_name_1', 'column_name_2']);
 		});
@@ -115,7 +115,7 @@ describe('exports', () => {
 
 	describe('list', () => {
 		it('creates a list object', () => {
-			const result = list(['column_name_1', 'column_name_2']);
+			const result = LIST(['column_name_1', 'column_name_2']);
 			expect(result).toBeInstanceOf(TqlList);
 			expect(result.values).toEqual(['column_name_1', 'column_name_2']);
 		});
@@ -124,7 +124,7 @@ describe('exports', () => {
 	describe('values', () => {
 		it('creates a values object given a single object', () => {
 			const value = { one: 1, two: 2, three: { number: 3 } };
-			const result = values(value);
+			const result = VALUES(value);
 			expect(result).toBeInstanceOf(TqlValues);
 			expect(result.values).toEqual(value);
 		});
@@ -134,7 +134,7 @@ describe('exports', () => {
 				{ one: 1, two: 2, three: { number: 3 } },
 				{ one: 1, two: 2, three: { number: 3 } },
 			];
-			const result = values(value);
+			const result = VALUES(value);
 			expect(result).toBeInstanceOf(TqlValues);
 			expect(result.values).toEqual(value);
 		});
@@ -142,7 +142,7 @@ describe('exports', () => {
 
 	describe('unsafe', () => {
 		it('creates a TqlTemplateString object', () => {
-			const result = unsafe(`SELECT * FROM users WHERE id = ${1234}`);
+			const result = UNSAFE(`SELECT * FROM users WHERE id = ${1234}`);
 			expect(result).toBeInstanceOf(TqlTemplateString);
 			expect(result.value).toEqual('SELECT * FROM users WHERE id = 1234');
 		});
@@ -153,15 +153,16 @@ describe('integration', () => {
 	describe('postgres', () => {
 		let query: Tql['query'];
 		let fragment: Tql['fragment'];
-		let identifiers: Tql['identifiers'];
-		let list: Tql['list'];
-		let values: Tql['values'];
+		let IDENTIFIER: Tql['IDENTIFIER'];
+		let IDENTIFIERS: Tql['IDENTIFIERS'];
+		let LIST: Tql['LIST'];
+		let VALUES: Tql['VALUES'];
 
 		beforeEach(() => {
 			const qb = createQueryBuilder();
 			qb.appendToParams = vi.fn().mockImplementation(qb.appendToParams);
 			qb.appendToQuery = vi.fn().mockImplementation(qb.appendToQuery);
-			({ query, fragment, identifiers, list, values } = init({
+			({ query, fragment, IDENTIFIER, IDENTIFIERS, LIST, VALUES } = init({
 				dialect: PostgresDialect,
 			}));
 		});
@@ -176,7 +177,7 @@ describe('integration', () => {
 
 		it('produces a correct INSERT query', () => {
 			const [q, params] = query`
-        INSERT INTO users ${values({ name: 'vercelliott' })};
+        INSERT INTO users ${VALUES({ name: 'vercelliott' })};
       `;
 			expect(q).toBe('\n        INSERT INTO users ("name") VALUES ($1);\n      ');
 			expect(params).toEqual(['vercelliott']);
@@ -184,7 +185,7 @@ describe('integration', () => {
 
 		it('produces a correct query with a list', () => {
 			const [q, params] = query`
-        SELECT * FROM users WHERE user_id IN ${list([1, 2, 3, 4])};
+        SELECT * FROM users WHERE user_id IN ${LIST([1, 2, 3, 4])};
       `;
 			expect(q).toBe('\n        SELECT * FROM users WHERE user_id IN ($1, $2, $3, $4);\n      ');
 			expect(params).toEqual([1, 2, 3, 4]);
@@ -192,7 +193,7 @@ describe('integration', () => {
 
 		it('produces a correct query with dynamic identifiers', () => {
 			const [q, params] = query`
-        SELECT ${identifiers('name')}, ${identifiers([
+        SELECT ${IDENTIFIER('name')}, ${IDENTIFIERS([
 				'email',
 				'birthdate',
 				'gender',
@@ -217,7 +218,7 @@ describe('integration', () => {
 		});
 
 		it('correctly parameterizes complex queries', () => {
-			const insertClause = fragment`INSERT INTO users ${values({ name: 'vercelliott' })}`;
+			const insertClause = fragment`INSERT INTO users ${VALUES({ name: 'vercelliott' })}`;
 			const updateClause = fragment`UPDATE users SET name = ${'reselliott'} WHERE name = ${'vercelliott'}`;
 			const selectClause = fragment`SELECT * FROM users WHERE name = ${'reselliott'}`;
 			const [q, params] = query`

@@ -36,11 +36,12 @@ export const init: Init = ({ dialect }) => {
 			return d.postprocess(qb.query, qb.params);
 		},
 		fragment,
-		identifiers: (ids) => new TqlIdentifiers(ids),
-		list: (vals) => new TqlList(vals),
-		values: (entries) => new TqlValues(entries),
-		set: (entries) => new TqlSet(entries),
-		unsafe: (str) => new TqlTemplateString(str),
+		IDENTIFIER: (identifier) => new TqlIdentifiers(identifier),
+		IDENTIFIERS: (identifiers) => new TqlIdentifiers(identifiers),
+		LIST: (list) => new TqlList(list),
+		VALUES: (entries) => new TqlValues(entries),
+		SET: (entries) => new TqlSet(entries),
+		UNSAFE: (str) => new TqlTemplateString(str),
 	};
 };
 

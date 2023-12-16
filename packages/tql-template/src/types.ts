@@ -100,25 +100,32 @@ export interface Tql {
 	};
 
 	/**
-	 * The same as {@link identifier}, but for multiple identifiers. These will be comma-separated by the driver.
-	 * @param ids - The IDs to escape.
+	 * Accepts a string and escapes that string for use as an identifier, such as a table or column name.
+	 * @param identifier - The identifier to escape.
+	 * @returns A representation of the identifier that will be escaped by {@link query}.
+	 */
+	IDENTIFIER: (identifier: string) => TqlIdentifiers;
+
+	/**
+	 * The same as {@link IDENTIFIER}, but for multiple identifiers. These will be comma-separated by the driver.
+	 * @param identifiers - The identifiers to escape.
 	 * @returns A representation of the identifiers that will be escaped by {@link query}.
 	 */
-	identifiers: (ids: string | string[]) => TqlIdentifiers;
+	IDENTIFIERS: (identifiers: string[]) => TqlIdentifiers;
 
 	/**
 	 * For use with the IN operator or anywhere else a parenthesis-list of values is needed.
 	 *
 	 * @example
 	 * ```ts
-	 * const [q, params] = query`SELECT * FROM users WHERE id IN ${list([1, 2, 3])}`;
+	 * const [q, params] = query`SELECT * FROM users WHERE id IN ${LIST([1, 2, 3])}`;
 	 * // ['SELECT * FROM users WHERE id IN ($1, $2, $3)', [1, 2, 3]]
 	 * ```
 	 *
 	 * @param vals - The values to build into a list.
 	 * @returns A representation of the list that will be escaped by {@link query}.
 	 */
-	list: (vals: unknown[]) => TqlList;
+	LIST: (vals: unknown[]) => TqlList;
 
 	/**
 	 * For use with the VALUES clause of an INSERT statement. Can insert one or multiple rows. If multiple
@@ -139,14 +146,14 @@ export interface Tql {
 	 *  { name: 'Alice', age: 30 },
 	 *  { name: 'Bob', age: 40 },
 	 * ];
-	 * const [q, params] = query`INSERT INTO users ${values(values)}`;
+	 * const [q, params] = query`INSERT INTO users ${VALUES(values)}`;
 	 * // ['INSERT INTO users ("name", "age") VALUES ($1, $2), ($3, $4);', ['Alice', 30, 'Bob', 40]]
 	 * ```
 	 *
 	 * @param entries The value or values to insert.
 	 * @returns A representation of the values that will be escaped by {@link query}.
 	 */
-	values: (entries: ValuesObject) => TqlValues;
+	VALUES: (entries: ValuesObject) => TqlValues;
 
 	/**
 	 * A SET clause. Given a record, the record keys are column names and the corresponding values are the values for that column.
@@ -156,14 +163,14 @@ export interface Tql {
 	 * ```ts
 	 * const userId = 1234;
 	 * const updatedUser = { name: 'vercelliott' };
-	 * const [q, params] = query`UPDATE users ${set(updatedUser)} WHERE user_id = ${userId};`;
+	 * const [q, params] = query`UPDATE users ${SET(updatedUser)} WHERE user_id = ${userId};`;
 	 * // ['UPDATE users SET "name" = $1 WHERE user_id = $2;', ['vercelliott', 1234]]
 	 *
 	 * @param entry An object representing this SET clause.
 	 * @returns A representation of the SET clause to be passed to {@link query}.
 	 * ```
 	 */
-	set: (entry: SetObject) => TqlSet;
+	SET: (entry: SetObject) => TqlSet;
 
 	/**
 	 * A raw string that will be inserted into the query as-is.
@@ -173,14 +180,14 @@ export interface Tql {
 	 * ### Expose yourself to SQL injection attacks:
 	 * ```ts
 	 * const userInputName = "Robert'); DROP TABLE students; --";
-	 * const [q, params] = query(`INSERT INTO students ("name") VALUES ('${unsafe(userInputName)});`);
+	 * const [q, params] = query(`INSERT INTO students ("name") VALUES ('${UNSAFE(userInputName)});`);
 	 * // INSERT INTO students ("name") VALUES ('Robert'); DROP TABLE students; --');
 	 * ```
 	 * Don't do this, obviously.
 	 *
 	 * @returns A representation of the string that will be inserted into the query as-is by {@link query} and {@link fragment}.
 	 */
-	unsafe: (str: string) => TqlTemplateString;
+	UNSAFE: (str: string) => TqlTemplateString;
 }
 
 export type Init = (options: { dialect: Dialect }) => Tql;
