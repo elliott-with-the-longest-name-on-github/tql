@@ -4,5 +4,7 @@
   "initialVersions": {
     "@sejohnson/tql": "2.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "grumpy-games-care"
+  ]
 }
