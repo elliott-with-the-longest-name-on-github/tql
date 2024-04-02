@@ -18,6 +18,7 @@ import type { Tql } from './types.js';
 export type * from './nodes.ts';
 export type * from './types.js';
 export { PostgresDialect } from './dialects/postgres.js';
+export { SnowflakeDialect } from './dialects/snowflake.js';
 
 export const init: Init = ({ dialect }) => {
 	const fragment = Object.defineProperty(

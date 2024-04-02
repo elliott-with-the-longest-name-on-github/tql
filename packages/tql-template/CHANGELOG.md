@@ -1,5 +1,17 @@
 # @sejohnson/tql
 
+## 2.1.0-next.1
+
+### Patch Changes
+
+- 5de1a42: fix: Export the API
+
+## 2.1.0-next.0
+
+### Minor Changes
+
+- dca2627: feat: Snowflake adapter v0
+
 ## 2.0.0
 
 ### Major Changes
