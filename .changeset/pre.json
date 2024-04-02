@@ -5,6 +5,7 @@
     "@sejohnson/tql": "2.0.0"
   },
   "changesets": [
-    "grumpy-games-care"
+    "grumpy-games-care",
+    "rotten-grapes-battle"
   ]
 }

@@ -1,5 +1,11 @@
 # @sejohnson/tql
 
+## 2.1.0-next.1
+
+### Patch Changes
+
+- 5de1a42: fix: Export the API
+
 ## 2.1.0-next.0
 
 ### Minor Changes
