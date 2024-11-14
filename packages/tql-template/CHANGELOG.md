@@ -1,5 +1,11 @@
 # @sejohnson/tql
 
+## 2.0.1
+
+### Patch Changes
+
+- b2c04a6: fix: Correctly call defineProperty to create fragment
+
 ## 2.0.0
 
 ### Major Changes
