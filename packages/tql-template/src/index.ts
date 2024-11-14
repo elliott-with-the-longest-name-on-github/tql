@@ -23,7 +23,7 @@ export const init: Init = ({ dialect }) => {
 	const fragment = Object.defineProperty(
 		(strings: TemplateStringsArray, ...values: unknown[]) => parseTemplate(TqlFragment, strings, values),
 		'join',
-		join,
+		{ value: join },
 	) as Tql['fragment'];
 
 	return {
