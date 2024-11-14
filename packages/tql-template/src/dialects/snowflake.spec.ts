@@ -1,19 +1,19 @@
 import { it, describe, expect, beforeEach, vi } from 'vitest';
-import { PostgresDialect } from './postgres.js';
+import { SnowflakeDialect } from './snowflake.js';
 import { TqlTemplateString, TqlParameter, TqlIdentifiers, TqlList, TqlValues, TqlSet } from '../nodes.js';
 import { createQueryBuilder } from '../utils.js';
 import { TqlError } from '../error.js';
 
-describe('tql dialect: Postgres', () => {
+describe('tql dialect: Snowflake', () => {
 	let queryBuilder: ReturnType<typeof createQueryBuilder>;
-	let d: () => PostgresDialect;
+	let d: () => SnowflakeDialect;
 
 	beforeEach(() => {
 		const qb = createQueryBuilder();
 		qb.appendToParams = vi.fn().mockImplementation(qb.appendToParams);
 		qb.appendToQuery = vi.fn().mockImplementation(qb.appendToQuery);
 		queryBuilder = qb;
-		d = (): PostgresDialect => new PostgresDialect(qb.appendToQuery, qb.appendToParams);
+		d = (): SnowflakeDialect => new SnowflakeDialect(qb.appendToQuery, qb.appendToParams);
 	});
 
 	describe('templateString', () => {
@@ -31,7 +31,7 @@ describe('tql dialect: Postgres', () => {
 			const parameterValue = 'vercelliott';
 			dialect.parameter(new TqlParameter(parameterValue));
 			expect(queryBuilder.params).toEqual([parameterValue]);
-			expect(queryBuilder.query).toBe('$1');
+			expect(queryBuilder.query).toBe(':1');
 		});
 
 		it("does not change the type of the parameter value, even if it's exotic", () => {
@@ -39,7 +39,7 @@ describe('tql dialect: Postgres', () => {
 			const parameterValue = { name: 'dispelliott' };
 			dialect.parameter(new TqlParameter(parameterValue));
 			expect(queryBuilder.params).toEqual([parameterValue]);
-			expect(queryBuilder.query).toBe('$1');
+			expect(queryBuilder.query).toBe(':1');
 		});
 
 		it("increments the parameter value according to what's returned from appendToQuery", () => {
@@ -49,7 +49,7 @@ describe('tql dialect: Postgres', () => {
 			dialect.parameter(new TqlParameter(parameter1Value));
 			dialect.parameter(new TqlParameter(parameter2Value));
 			expect(queryBuilder.params).toEqual([parameter1Value, parameter2Value]);
-			expect(queryBuilder.query).toBe('$1$2');
+			expect(queryBuilder.query).toBe(':1:2');
 		});
 	});
 
@@ -58,50 +58,46 @@ describe('tql dialect: Postgres', () => {
 			const dialect = d();
 			const identifier = 'name';
 			dialect.identifiers(new TqlIdentifiers(identifier));
-			expect(queryBuilder.params).toEqual([]);
-			expect(queryBuilder.query).toBe('"name"');
+			expect(queryBuilder.params).toEqual([identifier]);
+			expect(queryBuilder.query).toBe('IDENTIFIER(:1)');
 		});
 
 		it.each([
-			{ input: 'with"quotes', output: '"with""quotes"' },
+			{ input: 'with"quotes' },
 			{
 				input: 'dotted.identifiers',
-				output: '"dotted"."identifiers"',
 			},
 			{
 				input: 'with.injection" FROM users; SELECT * FROM privileged_information;--',
-				output: '"with"."injection"" FROM users; SELECT * FROM privileged_information;--"',
 			},
-		])('escapes single identifiers', ({ input, output }) => {
+		])('escapes single identifiers', ({ input }) => {
 			const dialect = d();
 			dialect.identifiers(new TqlIdentifiers(input));
-			expect(queryBuilder.params).toEqual([]);
-			expect(queryBuilder.query).toBe(output);
+			expect(queryBuilder.params).toEqual([input]);
+			expect(queryBuilder.query).toBe('IDENTIFIER(:1)');
 		});
 
 		it('adds multiple identifiers to the query', () => {
 			const dialect = d();
 			const identifier = 'name';
 			dialect.identifiers(new TqlIdentifiers([identifier, identifier, identifier]));
-			expect(queryBuilder.params).toEqual([]);
-			expect(queryBuilder.query).toBe('"name", "name", "name"');
+			expect(queryBuilder.params).toEqual(['name', 'name', 'name']);
+			expect(queryBuilder.query).toBe('IDENTIFIER(:1), IDENTIFIER(:2), IDENTIFIER(:3)');
 		});
 
 		it.each([
-			{ input: ['with"quotes', 'with"quotes'], output: '"with""quotes", "with""quotes"' },
+			{ input: ['with"quotes', 'with"quotes'] },
 			{
 				input: ['dotted.identifiers'],
-				output: '"dotted"."identifiers"',
 			},
 			{
 				input: ['with.injection" FROM users; SELECT * FROM privileged_information;--', 'blah'],
-				output: '"with"."injection"" FROM users; SELECT * FROM privileged_information;--", "blah"',
 			},
-		])('escapes multiple identifiers', ({ input, output }) => {
+		])('escapes multiple identifiers', ({ input }) => {
 			const dialect = d();
 			dialect.identifiers(new TqlIdentifiers(input));
-			expect(queryBuilder.params).toEqual([]);
-			expect(queryBuilder.query).toBe(output);
+			expect(queryBuilder.params).toEqual(input);
+			expect(queryBuilder.query).toBe(input.length === 1 ? 'IDENTIFIER(:1)' : 'IDENTIFIER(:1), IDENTIFIER(:2)');
 		});
 	});
 
@@ -111,7 +107,7 @@ describe('tql dialect: Postgres', () => {
 			const items = [1, 'hi', { complex: 'type' }];
 			dialect.list(new TqlList(items));
 			expect(queryBuilder.params).toEqual(items);
-			expect(queryBuilder.query).toBe('($1, $2, $3)');
+			expect(queryBuilder.query).toBe('(:1, :2, :3)');
 		});
 	});
 
@@ -121,21 +117,21 @@ describe('tql dialect: Postgres', () => {
 				const dialect = d();
 				const item = { name: 'vercelliott', email: 'wouldnt.you.like.to.know@vercel.com' };
 				dialect.values(new TqlValues(item));
-				expect(queryBuilder.params).toEqual([item.name, item.email]);
-				expect(queryBuilder.query).toBe('("name", "email") VALUES ($1, $2)');
+				expect(queryBuilder.params).toEqual(['name', 'email', item.name, item.email]);
+				expect(queryBuilder.query).toBe('(IDENTIFIER(:1), IDENTIFIER(:2)) VALUES (:3, :4)');
 			});
 
 			it('avoids SQL injection from identifiers and values', () => {
 				const dialect = d();
+				const key1 = 'name"; SELECT * FROM privileged_information; --';
+				const key2 = 'email';
 				const item = {
-					'name"; SELECT * FROM privileged_information; --': 'vercelliott; SELECT * FROM privileged_information; --',
-					email: 'wouldnt.you.like.to.know@vercel.com',
+					[key1]: 'vercelliott; SELECT * FROM privileged_information; --',
+					[key2]: 'wouldnt.you.like.to.know@vercel.com',
 				};
 				dialect.values(new TqlValues(item));
-				expect(queryBuilder.params).toEqual([item['name"; SELECT * FROM privileged_information; --'], item.email]);
-				expect(queryBuilder.query).toBe(
-					'("name""; SELECT * FROM privileged_information; --", "email") VALUES ($1, $2)',
-				);
+				expect(queryBuilder.params).toEqual([key1, key2, item[key1], item[key2]]);
+				expect(queryBuilder.query).toBe('(IDENTIFIER(:1), IDENTIFIER(:2)) VALUES (:3, :4)');
 			});
 
 			it('retains complex types', () => {
@@ -146,8 +142,8 @@ describe('tql dialect: Postgres', () => {
 					address: { street: 'go away' },
 				};
 				dialect.values(new TqlValues(item));
-				expect(queryBuilder.params).toEqual([item.name, item.email, item.address]);
-				expect(queryBuilder.query).toBe('("name", "email", "address") VALUES ($1, $2, $3)');
+				expect(queryBuilder.params).toEqual(['name', 'email', 'address', item.name, item.email, item.address]);
+				expect(queryBuilder.query).toBe('(IDENTIFIER(:1), IDENTIFIER(:2), IDENTIFIER(:3)) VALUES (:4, :5, :6)');
 			});
 		});
 
@@ -159,8 +155,15 @@ describe('tql dialect: Postgres', () => {
 					{ name: 'farewelliott', email: 'go-away@somewhere-else.com' },
 				];
 				dialect.values(new TqlValues(items));
-				expect(queryBuilder.params).toEqual([items[0].name, items[0].email, items[1].name, items[1].email]);
-				expect(queryBuilder.query).toBe('("name", "email") VALUES ($1, $2), ($3, $4)');
+				expect(queryBuilder.params).toEqual([
+					'name',
+					'email',
+					items[0].name,
+					items[0].email,
+					items[1].name,
+					items[1].email,
+				]);
+				expect(queryBuilder.query).toBe('(IDENTIFIER(:1), IDENTIFIER(:2)) VALUES (:3, :4), (:5, :6)');
 			});
 
 			it('correctly constructs the clause when objects have different key orders', () => {
@@ -170,32 +173,41 @@ describe('tql dialect: Postgres', () => {
 					{ email: 'go-away@somewhere-else.com', name: 'farewelliott' },
 				];
 				dialect.values(new TqlValues(items));
-				expect(queryBuilder.params).toEqual([items[0].name, items[0].email, items[1].name, items[1].email]);
-				expect(queryBuilder.query).toBe('("name", "email") VALUES ($1, $2), ($3, $4)');
+				expect(queryBuilder.params).toEqual([
+					'name',
+					'email',
+					items[0].name,
+					items[0].email,
+					items[1].name,
+					items[1].email,
+				]);
+				expect(queryBuilder.query).toBe('(IDENTIFIER(:1), IDENTIFIER(:2)) VALUES (:3, :4), (:5, :6)');
 			});
 
 			it('avoids SQL injection from identifiers and values', () => {
 				const dialect = d();
+				const key1 = 'name"; SELECT * FROM privileged_information; --';
+				const key2 = 'email';
 				const items = [
 					{
-						'name"; SELECT * FROM privileged_information; --': 'vercelliott; SELECT * FROM privileged_information; --',
-						email: 'wouldnt.you.like.to.know@vercel.com',
+						[key1]: 'vercelliott; SELECT * FROM privileged_information; --',
+						[key2]: 'wouldnt.you.like.to.know@vercel.com',
 					},
 					{
-						email: 'go-away@somewhere-else.com',
-						'name"; SELECT * FROM privileged_information; --': 'vercelliott; SELECT * FROM privileged_information; --',
+						[key2]: 'go-away@somewhere-else.com',
+						[key1]: 'vercelliott; SELECT * FROM privileged_information; --',
 					},
 				];
 				dialect.values(new TqlValues(items));
 				expect(queryBuilder.params).toEqual([
+					key1,
+					key2,
 					items[0]['name"; SELECT * FROM privileged_information; --'],
 					items[0].email,
 					items[1]['name"; SELECT * FROM privileged_information; --'],
 					items[1].email,
 				]);
-				expect(queryBuilder.query).toBe(
-					'("name""; SELECT * FROM privileged_information; --", "email") VALUES ($1, $2), ($3, $4)',
-				);
+				expect(queryBuilder.query).toBe('(IDENTIFIER(:1), IDENTIFIER(:2)) VALUES (:3, :4), (:5, :6)');
 			});
 
 			it('retains complex types', () => {
@@ -214,6 +226,9 @@ describe('tql dialect: Postgres', () => {
 				];
 				dialect.values(new TqlValues(items));
 				expect(queryBuilder.params).toEqual([
+					'name',
+					'email',
+					'address',
 					items[0].name,
 					items[0].email,
 					items[0].address,
@@ -221,7 +236,9 @@ describe('tql dialect: Postgres', () => {
 					items[1].email,
 					items[1].address,
 				]);
-				expect(queryBuilder.query).toBe('("name", "email", "address") VALUES ($1, $2, $3), ($4, $5, $6)');
+				expect(queryBuilder.query).toBe(
+					'(IDENTIFIER(:1), IDENTIFIER(:2), IDENTIFIER(:3)) VALUES (:4, :5, :6), (:7, :8, :9)',
+				);
 			});
 
 			it('throws when subsequent value objects have missing keys', () => {
@@ -244,19 +261,26 @@ describe('tql dialect: Postgres', () => {
 			const dialect = d();
 			const setRecord = { name: 'vercelliott', 'address.zip': '00000' };
 			dialect.set(new TqlSet(setRecord));
-			expect(queryBuilder.params).toEqual(['vercelliott', '00000']);
-			expect(queryBuilder.query).toBe('SET "name" = $1, "address"."zip" = $2');
+			expect(queryBuilder.params).toEqual(['name', 'vercelliott', 'address.zip', '00000']);
+			expect(queryBuilder.query).toBe('SET IDENTIFIER(:1) = :2, IDENTIFIER(:3) = :4');
 		});
 
 		it('avoids SQL injection from identifiers and values', () => {
 			const dialect = d();
+			const key1 = 'name"; SELECT * FROM privileged_information; --';
+			const key2 = 'email';
 			const item = {
-				'name"; SELECT * FROM privileged_information; --': 'vercelliott; SELECT * FROM privileged_information; --',
-				email: 'wouldnt.you.like.to.know@vercel.com',
+				[key1]: 'vercelliott; SELECT * FROM privileged_information; --',
+				[key2]: 'wouldnt.you.like.to.know@vercel.com',
 			};
 			dialect.set(new TqlSet(item));
-			expect(queryBuilder.params).toEqual([item['name"; SELECT * FROM privileged_information; --'], item.email]);
-			expect(queryBuilder.query).toBe('SET "name""; SELECT * FROM privileged_information; --" = $1, "email" = $2');
+			expect(queryBuilder.params).toEqual([
+				key1,
+				item['name"; SELECT * FROM privileged_information; --'],
+				key2,
+				item.email,
+			]);
+			expect(queryBuilder.query).toBe('SET IDENTIFIER(:1) = :2, IDENTIFIER(:3) = :4');
 		});
 	});
 });

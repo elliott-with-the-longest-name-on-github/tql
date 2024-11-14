@@ -1,0 +1,11 @@
+{
+  "mode": "exit",
+  "tag": "next",
+  "initialVersions": {
+    "@sejohnson/tql": "2.0.0"
+  },
+  "changesets": [
+    "grumpy-games-care",
+    "rotten-grapes-battle"
+  ]
+}
